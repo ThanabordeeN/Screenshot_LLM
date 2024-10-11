@@ -2,14 +2,139 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         self.MainWindow = MainWindow
 
         self.MainWindow.setObjectName("MainWindow")
         self.MainWindow.resize(640, 794)
-        self.MainWindow.setStyleSheet("""
+        self.MainWindow.setStyleSheet(self.get_stylesheet())
+        font = QtGui.QFont("Segoe UI", 10)
+
+        # Set window flags to make it always on top
+        self.MainWindow.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
+
+        self.centralwidget = QtWidgets.QWidget(MainWindow)
+        self.centralwidget.setObjectName("centralwidget")
+        self.verticalLayout = QtWidgets.QVBoxLayout(self.centralwidget)
+        self.verticalLayout.setObjectName("verticalLayout")
+        self.verticalLayout.setContentsMargins(20, 20, 20, 20)
+        self.verticalLayout.setSpacing(20)
+
+        self.setup_main_tab(font)
+        self.setup_settings_tab(font)
+
+        self.tab_widget = QtWidgets.QTabWidget(self.centralwidget)
+        self.tab_widget.setFont(font)
+        self.tab_widget.setObjectName("tab_widget")
+        self.tab_widget.addTab(self.tab1, "Main")
+        self.tab_widget.addTab(self.tab2, "Settings")
+        self.verticalLayout.addWidget(self.tab_widget)
+
+        MainWindow.setCentralWidget(self.centralwidget)
+
+        self.retranslateUi(MainWindow)
+        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
+        # Set default position to top-right corner of the screen
+        screen_geometry = QtWidgets.QDesktopWidget().screenGeometry()
+        x = screen_geometry.width() - self.MainWindow.width()
+        y = 0
+        self.MainWindow.move(x, y)
+
+    def setup_main_tab(self, font):
+        self.tab1 = QtWidgets.QWidget()
+        self.tab1.setObjectName("tab1")
+        self.tab1_layout = QtWidgets.QVBoxLayout(self.tab1)
+        self.tab1_layout.setObjectName("tab1_layout")
+
+        self.image_label = self.create_label()
+        self.tab1_layout.addWidget(self.image_label)
+
+        self.conversation = self.create_text_edit()
+        self.tab1_layout.addWidget(self.conversation)
+
+        self.entry = self.create_line_edit(font)
+        self.tab1_layout.addWidget(self.entry)
+
+        self.loading_label = self.create_label()
+        self.loading_label.setStyleSheet("color: #007BFF;")
+        self.loading_label.setFont(font)
+        self.tab1_layout.addWidget(self.loading_label)
+
+        self.send_button = QtWidgets.QPushButton(self.tab1)
+        self.send_button.setFont(font)
+        self.send_button.setObjectName("send_button")
+        self.tab1_layout.addWidget(self.send_button)
+
+        self.reset_memory = QtWidgets.QPushButton(self.tab1)
+        self.reset_memory.setFont(font)
+        self.reset_memory.setObjectName("reset_memory")
+        self.reset_memory.setText("Reset Memory")
+        self.tab1_layout.addWidget(self.reset_memory)
+
+    def setup_settings_tab(self, font):
+        self.tab2 = QtWidgets.QWidget()
+        self.tab2.setObjectName("tab2")
+        self.tab2_layout = QtWidgets.QVBoxLayout(self.tab2)
+        self.tab2_layout.setObjectName("tab2_layout")
+
+        self.api_key_label = QtWidgets.QLabel(self.tab2)
+        self.api_key_label.setFont(font)
+        self.api_key_label.setObjectName("api_key_label")
+        self.api_key_label.setText("LLM API Key")
+        self.api_key_label.setAlignment(QtCore.Qt.AlignCenter)
+        self.tab2_layout.addWidget(self.api_key_label)
+
+        self.api_key_input = QtWidgets.QLineEdit(self.tab2)
+        self.api_key_input.setFont(font)
+        self.api_key_input.setObjectName("api_key_input")
+        self.api_key_input.setPlaceholderText("Get your API key from Provider's website")
+        self.api_key_input.setAlignment(QtCore.Qt.AlignCenter)
+        self.tab2_layout.addWidget(self.api_key_input)
+
+        self.base_url_label = QtWidgets.QLabel(self.tab2)
+        self.base_url_label.setFont(font)
+        self.base_url_label.setObjectName("base_url_label")
+        self.base_url_label.setText("Base URL (optional)")
+        self.base_url_label.setAlignment(QtCore.Qt.AlignCenter)
+        self.tab2_layout.addWidget(self.base_url_label)
+
+        self.base_url_input = QtWidgets.QLineEdit(self.tab2)
+        self.base_url_input.setFont(font)
+        self.base_url_input.setObjectName("base_url_input")
+        self.base_url_input.setPlaceholderText("Default is Google AI Studio if left blank")
+        self.base_url_input.setAlignment(QtCore.Qt.AlignCenter)
+        self.tab2_layout.addWidget(self.base_url_input)
+
+        self.model_id_label = QtWidgets.QLabel(self.tab2)
+        self.model_id_label.setAlignment(QtCore.Qt.AlignCenter)
+        self.model_id_label.setFont(font)
+        self.model_id_label.setObjectName("model_id_label")
+        self.model_id_label.setText("Model ID (optional)")
+        self.tab2_layout.addWidget(self.model_id_label)
+
+        self.model_id_input = QtWidgets.QLineEdit(self.tab2)
+        self.model_id_input.setFont(font)
+        self.model_id_input.setObjectName("model_id_input")
+        self.model_id_input.setAlignment(QtCore.Qt.AlignCenter)
+        self.model_id_input.setPlaceholderText("Default is gemini/gemini-1.5-flash-002 if left blank")
+        self.tab2_layout.addWidget(self.model_id_input)
+
+        self.save_button = QtWidgets.QPushButton(self.tab2)
+        self.save_button.setFont(font)
+        self.save_button.setObjectName("save_button")
+        self.save_button.setText("Save")
+        self.tab2_layout.addWidget(self.save_button)
+
+        self.reset_config = QtWidgets.QPushButton(self.tab2)
+        self.reset_config.setFont(font)
+        self.reset_config.setObjectName("reset_config")
+        self.reset_config.setText("Reset Config")
+        self.tab2_layout.addWidget(self.reset_config)
+
+    def get_stylesheet(self):
+        return """
             QMainWindow {
                 background-color: #f0f0f0;
             }
@@ -39,82 +164,43 @@ class Ui_MainWindow(object):
             QPushButton:pressed {
                 background-color: #004080;
             }
-        """)
-        font = QtGui.QFont("Segoe UI", 10)
+            
+        """
 
-        # Set window flags to make it always on top
-        self.MainWindow.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
+    def create_label(self):
+        label = QtWidgets.QLabel(self.centralwidget)
+        label.setAlignment(QtCore.Qt.AlignCenter)
+        label.setStyleSheet("border-radius: 10px;")
+        label.setObjectName("image_label")
+        label.setFont(QtGui.QFont("Segoe UI", 10))
+        return label
 
-        self.centralwidget = QtWidgets.QWidget(MainWindow)
-        self.centralwidget.setObjectName("centralwidget")
-        self.verticalLayout = QtWidgets.QVBoxLayout(self.centralwidget)
-        self.verticalLayout.setObjectName("verticalLayout")
-        self.verticalLayout.setContentsMargins(20, 20, 20, 20)
-        self.verticalLayout.setSpacing(20)
+    def create_text_edit(self):
+        text_edit = QtWidgets.QTextEdit(self.centralwidget)
+        text_edit.setReadOnly(True)
+        text_edit.setStyleSheet("border-radius: 10px;")
+        text_edit.setObjectName("conversation")
+        text_edit.setFont(QtGui.QFont("Segoe UI", 10))
+        return text_edit
 
-        self.image_label = QtWidgets.QLabel(self.centralwidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.image_label.sizePolicy().hasHeightForWidth())
-        self.image_label.setAlignment(QtCore.Qt.AlignCenter)  # Center the text
-        self.image_label.setSizePolicy(sizePolicy)
-        self.image_label.setMinimumSize(QtCore.QSize(400, 400))
-        self.image_label.setStyleSheet("border-radius: 10px;")
-        self.image_label.setText("")
-        self.image_label.setObjectName("image_label")
-        self.verticalLayout.addWidget(self.image_label)
+    def create_line_edit(self, font):
+        line_edit = QtWidgets.QLineEdit(self.centralwidget)
+        line_edit.setPlaceholderText("Type your message here...")
+        line_edit.setFocus()
+        line_edit.setFont(font)
+        line_edit.setObjectName("entry")
+        return line_edit
 
-        self.conversation = QtWidgets.QTextEdit(self.centralwidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.conversation.sizePolicy().hasHeightForWidth())
-        self.conversation.setSizePolicy(sizePolicy)
-        self.conversation.viewport().setProperty("cursor", QtGui.QCursor(QtCore.Qt.ArrowCursor))
-        self.conversation.setStyleSheet("border-radius: 10px;")
-        self.conversation.setMinimumSize(QtCore.QSize(0, 100))
-        self.conversation.setReadOnly(True)
-        self.conversation.setObjectName("conversation")
-        self.verticalLayout.addWidget(self.conversation)
-
-        self.entry = QtWidgets.QLineEdit(self.centralwidget)
-        self.entry.setMinimumSize(QtCore.QSize(0, 50))
-        self.entry.setStyleSheet("border-radius: 10px;")
-        self.entry.setObjectName("entry")
-        self.entry.setPlaceholderText("Type your message here...")
-        self.entry.setFocus()
-        self.entry.setFont(font)
-        self.verticalLayout.addWidget(self.entry)
-
-        self.send_button = QtWidgets.QPushButton(self.centralwidget)
-        self.send_button.setObjectName("send_button")
-        
-        self.verticalLayout.addWidget(self.send_button)
-        # Set font to Segoe UI, 10pt
-        self.conversation.setFont(font)
-        self.loading_label = QtWidgets.QLabel(self.centralwidget)
-        self.loading_label.setAlignment(QtCore.Qt.AlignCenter)  # Center the text
-        self.loading_label.setText("")
-        self.loading_label.setObjectName("loading_label")
-        self.loading_label.setStyleSheet("color: #007BFF;")
-        self.loading_label.setFont(font)    
-        
-        
-        self.verticalLayout.addWidget(self.loading_label)
-
-        MainWindow.setCentralWidget(self.centralwidget)
-
-        self.retranslateUi(MainWindow)
-        QtCore.QMetaObject.connectSlotsByName(MainWindow)
-
-        # Set default position to top-right corner of the screen
-        screen_geometry = QtWidgets.QDesktopWidget().screenGeometry()
-        x = screen_geometry.width() - self.MainWindow.width()
-        y = 0
-        self.MainWindow.move(x, y)
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "sHashtagAI"))
         self.send_button.setText(_translate("MainWindow", "Send"))
 
+if __name__ == "__main__":
+    import sys
+    app = QtWidgets.QApplication(sys.argv)
+    MainWindow = QtWidgets.QMainWindow()
+    ui = Ui_MainWindow()
+    ui.setupUi(MainWindow)
+    MainWindow.show()
+    sys.exit(app.exec_())

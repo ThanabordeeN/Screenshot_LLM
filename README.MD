@@ -1,56 +1,55 @@
 # Screenshot Analyzer
 
-This project is a screenshot analyzer application built using PyQt5. It allows users to analyze screenshots and interact with an AI model to ask questions about the screenshot.
+## Overview
+Screenshot Analyzer is a desktop application built using PyQt5 that allows users to analyze screenshots. The application leverages a language model to provide insights and answers based on the content of the screenshots.
 
 ## Features
-
-- Display screenshots
-- Interactive conversation area
-- AI-based question answering about the screenshot
+- Display screenshots in a user-friendly interface.
+- Interact with an AI assistant to ask questions about the displayed screenshot.
+- Save and reset configurations for the AI model.
+- Monitor the user's screenshot directory for new images.
 
 ## Installation
 
-1. Clone the repository:
-    ```sh
-    git clone <repository-url>
-    cd <repository-directory>
-    ```
+### Prerequisites
+- Python 3.x
+- Pip (Python package installer)
 
-2. Create and activate a virtual environment:
-    ```sh
-    python -m venv venv
-    source venv/bin/activate  # On Windows use `venv\Scripts\activate`
-    ```
+### Dependencies
+Install the required packages using the following command:
 
-3. Install the required packages:
-    ```sh
-    pip install -r requirements.txt
-    ```
-
-4. Set up environment variables:
-    - Create a `.env` file in the root directory of the project.
-    - Add the following environment variables:
-        ```
-        LLM_API_KEY=<your-llm-api-key>
-        BASE_URL=<your-base-url>
-        ```
+```bash
+pip install -r requirements.txt
+```
 
 ## Usage
+1. Clone the repository or download the source code.
+2. Navigate to the project directory.
+3. Set up your environment variables in a `.env` file or directly in the application settings.
+4. Run the application:
 
-1. Run the application:
-    ```sh
-    python main.py
-    ```
+```bash
+python main.py
+```
 
-2. The application will open a window where you can load and analyze screenshots.
+5. The application will start, and you can interact with it by asking questions about the displayed screenshot.
 
-## Project Structure
+## Configuration
+The application requires the following environment variables to be set in a `.env` file:
 
-- [`main.py`](command:_github.copilot.openRelativePath?%5B%7B%22scheme%22%3A%22file%22%2C%22authority%22%3A%22%22%2C%22path%22%3A%22%2Fhome%2Fcepheusn22%2FDocuments%2FPython_Projects%2Fscreenshort_llm%2Fmain.py%22%2C%22query%22%3A%22%22%2C%22fragment%22%3A%22%22%7D%2C%22edc96558-2e6c-4c34-b516-d34d9ec49f03%22%5D "/home/cepheusn22/Documents/Python_Projects/screenshort_llm/main.py"): The main entry point of the application.
-- [`interface.py`](command:_github.copilot.openRelativePath?%5B%7B%22scheme%22%3A%22file%22%2C%22authority%22%3A%22%22%2C%22path%22%3A%22%2Fhome%2Fcepheusn22%2FDocuments%2FPython_Projects%2Fscreenshort_llm%2Finterface.py%22%2C%22query%22%3A%22%22%2C%22fragment%22%3A%22%22%7D%2C%22edc96558-2e6c-4c34-b516-d34d9ec49f03%22%5D "/home/cepheusn22/Documents/Python_Projects/screenshort_llm/interface.py"): The generated UI class from the Qt Designer `.ui` file.
-- [`interface.ui`](command:_github.copilot.openRelativePath?%5B%7B%22scheme%22%3A%22file%22%2C%22authority%22%3A%22%22%2C%22path%22%3A%22%2Fhome%2Fcepheusn22%2FDocuments%2FPython_Projects%2Fscreenshort_llm%2Finterface.ui%22%2C%22query%22%3A%22%22%2C%22fragment%22%3A%22%22%7D%2C%22edc96558-2e6c-4c34-b516-d34d9ec49f03%22%5D "/home/cepheusn22/Documents/Python_Projects/screenshort_llm/interface.ui"): The Qt Designer file for the UI layout.
-- [`.env`](command:_github.copilot.openRelativePath?%5B%7B%22scheme%22%3A%22file%22%2C%22authority%22%3A%22%22%2C%22path%22%3A%22%2Fhome%2Fcepheusn22%2FDocuments%2FPython_Projects%2Fscreenshort_llm%2F.env%22%2C%22query%22%3A%22%22%2C%22fragment%22%3A%22%22%7D%2C%22edc96558-2e6c-4c34-b516-d34d9ec49f03%22%5D "/home/cepheusn22/Documents/Python_Projects/screenshort_llm/.env"): Environment variables file (not included in the repository).
+- `LLM_API_KEY`: Your API key for the language model.
+- `BASE_URL`: (Optional) The base URL for the AI service.
+- `LLM_MODEL_ID`: (Optional) The model ID to use for the AI service.
+
+## Screenshot Directory
+The application monitors the default screenshot directory, which is typically located at:
+- `C:\Users\<YourUsername>\Pictures\Screenshots`
+
+You can change this directory in the `screenshot_watcher.py` file if needed.
 
 ## License
+This project is licensed under the MIT License. See the LICENSE file for more details.
 
-This project is licensed under the MIT License.
+## Acknowledgments
+- [PyQt5](https://www.riverbankcomputing.com/software/pyqt/intro) for the GUI framework.
+- [litellm](https://github.com/yourusername/litellm) for the language model integration.
