@@ -6,6 +6,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         self.MainWindow = MainWindow
+
         self.MainWindow.setObjectName("MainWindow")
         self.MainWindow.resize(640, 794)
         self.MainWindow.setStyleSheet("""
@@ -39,6 +40,7 @@ class Ui_MainWindow(object):
                 background-color: #004080;
             }
         """)
+        font = QtGui.QFont("Segoe UI", 10)
 
         # Set window flags to make it always on top
         self.MainWindow.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
@@ -80,18 +82,25 @@ class Ui_MainWindow(object):
         self.entry.setMinimumSize(QtCore.QSize(0, 50))
         self.entry.setStyleSheet("border-radius: 10px;")
         self.entry.setObjectName("entry")
+        self.entry.setPlaceholderText("Type your message here...")
+        self.entry.setFocus()
+        self.entry.setFont(font)
         self.verticalLayout.addWidget(self.entry)
 
         self.send_button = QtWidgets.QPushButton(self.centralwidget)
         self.send_button.setObjectName("send_button")
+        
         self.verticalLayout.addWidget(self.send_button)
         # Set font to Segoe UI, 10pt
-        font = QtGui.QFont("Segoe UI", 10)
         self.conversation.setFont(font)
         self.loading_label = QtWidgets.QLabel(self.centralwidget)
         self.loading_label.setAlignment(QtCore.Qt.AlignCenter)  # Center the text
         self.loading_label.setText("")
         self.loading_label.setObjectName("loading_label")
+        self.loading_label.setStyleSheet("color: #007BFF;")
+        self.loading_label.setFont(font)    
+        
+        
         self.verticalLayout.addWidget(self.loading_label)
 
         MainWindow.setCentralWidget(self.centralwidget)

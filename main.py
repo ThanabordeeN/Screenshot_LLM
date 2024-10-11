@@ -10,6 +10,7 @@ import base64
 from PyQt5.QtWidgets import QDialog, QVBoxLayout, QLabel, QLineEdit, QPushButton
 from interface import Ui_MainWindow  # Import the generated UI class
 import markdown
+from PyQt5.QtWidgets import QMessageBox
 
 class ScreenshotAnalyzer(QMainWindow, Ui_MainWindow):
     def __init__(self, image_path):
@@ -28,30 +29,17 @@ class ScreenshotAnalyzer(QMainWindow, Ui_MainWindow):
 
     def display_image(self):
         pixmap = QPixmap(self.image_path)
-        width, height = pixmap.width(), pixmap.height()
+        screen = QApplication.primaryScreen()
+        screen_geometry = screen.geometry()
+        screen_width = screen_geometry.width()
+        screen_height = screen_geometry.height()
 
-        # Define the minimum and maximum dimensions
-        min_dim, max_dim = 200, 400
-        aspect_ratio = width / height
-
-        # Adjust dimensions based on the aspect ratio
-        if height > max_dim:
-            height = max_dim
-            width = int(height * aspect_ratio)
-        elif height < min_dim:
-            height = min_dim
-            width = int(height * aspect_ratio)
-        if width > max_dim:
-            width = max_dim
-            height = int(width / aspect_ratio)
-        elif width < min_dim:
-            width = min_dim
-            height = int(width / aspect_ratio)
-
-        pixmap = pixmap.scaled(width, height, Qt.KeepAspectRatio)
-        self.MainWindow.resize(width, height)
-        self.conversation.setMinimumSize(QtCore.QSize(width, 250))
-        self.image_label.setMinimumSize(width, height)
+        self.w = int(screen_width * 0.3)  # 30% of screen width
+        self.h = int(screen_height * 0.3)  # 30% of screen height
+        pixmap = pixmap.scaled(self.w, self.h, Qt.KeepAspectRatio)
+        self.MainWindow.resize(self.w, self.h)
+        self.conversation.setMinimumSize(QtCore.QSize(450, int(self.h/1.5)))
+        self.image_label.setMinimumSize(self.w, self.h)
         self.image_label.setPixmap(pixmap)
 
     def setup_conversation_area(self):
@@ -96,12 +84,14 @@ class ScreenshotAnalyzer(QMainWindow, Ui_MainWindow):
             self.loading_label.setText("")
             self.update_conversation(response, "ai")
         except Exception as e:
-            self.loading_label.setText("Error occurred. Please try again. error: " + str(e))
-            while True:
-                if self.retry_button.clicked:
-                    self.loading_label.setText("")
-                    break
-                self.msleep(1000)  # Check every second
+            error_message = QMessageBox()
+            error_message.setIcon(QMessageBox.Critical)
+            error_message.setWindowTitle("Error")
+            error_message.setText("Error occurred. Please try again. Error: " + str(e))
+            error_message.exec_()
+            sys.exit(1)
+            
+                
 
     def update_conversation(self, text, tag):
         if tag == "ai":
@@ -123,7 +113,6 @@ class ScreenshotAnalyzer(QMainWindow, Ui_MainWindow):
             messages=self.memory,
             api_key=LLM_API_MODEL
         )
-
 
         return response.choices[0].message.content
 
