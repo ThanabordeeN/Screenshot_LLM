@@ -7,13 +7,9 @@ from PyQt5 import QtCore
 from litellm import completion
 import dotenv
 import base64
+from PyQt5.QtWidgets import QDialog, QVBoxLayout, QLabel, QLineEdit, QPushButton
 from interface import Ui_MainWindow  # Import the generated UI class
-
-dotenv.load_dotenv()
-LLM_API_MODEL = os.getenv("LLM_API_KEY")
-LLM_MODEL_ID = os.getenv("LLM_MODEL_ID","gemini/gemini-1.5-flash-002")
-AI_BASE_URL = os.getenv("BASE_URL")
-SCREENSHOTS_DIR = os.path.join(os.path.expanduser("~"), "Pictures", "Screenshots")
+import markdown
 
 class ScreenshotAnalyzer(QMainWindow, Ui_MainWindow):
     def __init__(self, image_path):
@@ -32,12 +28,30 @@ class ScreenshotAnalyzer(QMainWindow, Ui_MainWindow):
 
     def display_image(self):
         pixmap = QPixmap(self.image_path)
-        
-        self.w = pixmap.width()
-        self.h = pixmap.height()
-        self.MainWindow.resize(self.w, self.h)
-        self.conversation.setMinimumSize(QtCore.QSize(self.w, int(self.h/2)))
-        pixmap = pixmap.scaled(self.w, self.h, Qt.KeepAspectRatio)
+        width, height = pixmap.width(), pixmap.height()
+
+        # Define the minimum and maximum dimensions
+        min_dim, max_dim = 200, 400
+        aspect_ratio = width / height
+
+        # Adjust dimensions based on the aspect ratio
+        if height > max_dim:
+            height = max_dim
+            width = int(height * aspect_ratio)
+        elif height < min_dim:
+            height = min_dim
+            width = int(height * aspect_ratio)
+        if width > max_dim:
+            width = max_dim
+            height = int(width / aspect_ratio)
+        elif width < min_dim:
+            width = min_dim
+            height = int(width / aspect_ratio)
+
+        pixmap = pixmap.scaled(width, height, Qt.KeepAspectRatio)
+        self.MainWindow.resize(width, height)
+        self.conversation.setMinimumSize(QtCore.QSize(width, 250))
+        self.image_label.setMinimumSize(width, height)
         self.image_label.setPixmap(pixmap)
 
     def setup_conversation_area(self):
@@ -60,9 +74,8 @@ class ScreenshotAnalyzer(QMainWindow, Ui_MainWindow):
             return
 
         self.entry.clear()
-        self.update_conversation("You: " + text, "user")
-
-        self.loading_label.setText("Loading...")
+        self.update_conversation(text, "user")
+        self.loading_label.setText("Loading 🔃")
         self.repaint()
 
         if not self.memory:
@@ -75,15 +88,28 @@ class ScreenshotAnalyzer(QMainWindow, Ui_MainWindow):
             })
         else:
             self.memory.append({'role': 'user', 'content': text})
+       
+        try:
+            response = self.generate_answer()
+            self.memory.append({'role': 'assistant', 'content': response})
 
-        response = self.generate_answer()
-        self.memory.append({'role': 'assistant', 'content': response})
-
-        self.loading_label.setText("")
-        self.update_conversation("AI: " + response, "ai")
+            self.loading_label.setText("")
+            self.update_conversation(response, "ai")
+        except Exception as e:
+            self.loading_label.setText("Error occurred. Please try again. error: " + str(e))
+            while True:
+                if self.retry_button.clicked:
+                    self.loading_label.setText("")
+                    break
+                self.msleep(1000)  # Check every second
 
     def update_conversation(self, text, tag):
-        self.conversation.append(text)
+        if tag == "ai":
+            markdown_text = markdown.markdown(text)
+            self.conversation.append(f"<b>AI</b> : <font color='blue'>{markdown_text}</font>")
+        else:
+            self.conversation.append(f"<b>USER</b> : <font color='green'>{text}</font>")
+            
         self.conversation.ensureCursorVisible()
 
     def image_to_base64(self):
@@ -92,11 +118,13 @@ class ScreenshotAnalyzer(QMainWindow, Ui_MainWindow):
 
     def generate_answer(self):
         response = completion(
-            model="gemini/gemini-1.5-flash-002",
+            model=LLM_MODEL_ID,
             base_url=AI_BASE_URL,
             messages=self.memory,
             api_key=LLM_API_MODEL
         )
+
+
         return response.choices[0].message.content
 
     def closeEvent(self, event):
@@ -112,11 +140,14 @@ class ScreenshotAnalyzer(QMainWindow, Ui_MainWindow):
 class ScreenshotWatcher(QThread):
     screenshot_detected = pyqtSignal(str)
 
-    def __init__(self, directory):
+    def __init__(self):
         super().__init__()
-        self.directory = directory
-        self.current_files = set(os.listdir(directory))
-
+        try:
+            self.directory = os.path.join(os.path.expanduser("~"), "Pictures", "Screenshots")
+            self.current_files = set(os.listdir(self.directory))
+        except:
+            self.directory = os.path.join(os.path.expanduser("~"),"OneDrive","Pictures", "Screenshots")
+            self.current_files = set(os.listdir(self.directory))
     def run(self):
         while True:
             new_files = set(os.listdir(self.directory))
@@ -130,16 +161,88 @@ class ScreenshotWatcher(QThread):
                     self.screenshot_detected.emit(os.path.join(self.directory, recent_file))
                 self.current_files = new_files
             self.msleep(1000)  # Check every second
+class ConfigDialog(QDialog):
+        def __init__(self):
+            super().__init__()
+            self.setWindowTitle("Configuration")
+            self.layout = QVBoxLayout()
+
+            self.api_key_label = QLabel("LLM API Key:")
+            self.api_key_input = QLineEdit()
+            self.layout.addWidget(self.api_key_label)
+            self.layout.addWidget(QLabel("Get your API key from Provider's website"))
+            self.layout.addWidget(self.api_key_input)
+            
+
+            self.base_url_label = QLabel("Base URL (optional):")
+            self.base_url_input = QLineEdit()
+            self.base_url_input.setPlaceholderText("Default is Google AI Studio if left blank")
+            self.layout.addWidget(self.base_url_label)
+            self.layout.addWidget(QLabel("Get your Base URL from Provider's website"))
+            self.layout.addWidget(self.base_url_input)
+
+            self.model_id_label = QLabel("Model ID (optional):")
+            self.model_id_input = QLineEdit()
+            self.model_id_input.setPlaceholderText("Default is gemini/gemini-1.5-flash-002 if left blank")
+            self.layout.addWidget(self.model_id_label)
+            self.layout.addWidget(QLabel("Get your Model ID from Provider's website"))
+            self.layout.addWidget(self.model_id_input)
+                        
+
+            self.save_button = QPushButton("Save")
+            self.save_button.clicked.connect(self.save_config)
+            self.layout.addWidget(self.save_button)
+
+            self.setLayout(self.layout)
+
+        def save_config(self):
+            api_key = self.api_key_input.text().strip()
+            base_url = self.base_url_input.text().strip()
+            model_id = self.model_id_input.text().strip()
+
+            if api_key and base_url=="" and model_id=="":
+                with open(".env", "w") as env_file:
+                    env_file.write(f"LLM_API_KEY={api_key}\n")
+                self.accept()
+            elif api_key and base_url and model_id:
+                with open(".env", "w") as env_file:
+                    env_file.write(f"LLM_API_KEY={api_key}\n")
+                    env_file.write(f"BASE_URL={base_url}\n")
+                    env_file.write(f"LLM_MODEL_ID={model_id}\n")
+                self.accept()
+            
+            elif api_key and model_id:
+                with open(".env", "w") as env_file:
+                    env_file.write(f"LLM_API_KEY={api_key}\n")
+                    env_file.write(f"LLM_MODEL_ID={model_id}\n")
+                self.accept()
+            else:
+                self.reject()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    watcher = ScreenshotWatcher(SCREENSHOTS_DIR)
+    dotenv.load_dotenv()
+    LLM_API_MODEL = os.getenv("LLM_API_KEY")
+    AI_BASE_URL = os.getenv("BASE_URL")
+    LLM_MODEL_ID = os.getenv("LLM_MODEL_ID","gemini/gemini-1.5-flash-002")
+
+    if not LLM_API_MODEL:
+        config_dialog = ConfigDialog()
+        if config_dialog.exec_() == QDialog.Accepted:
+            dotenv.load_dotenv()
+            LLM_API_MODEL = os.getenv("LLM_API_KEY")
+            LLM_MODEL_ID = os.getenv("LLM_MODEL_ID","gemini/gemini-1.5-flash-002")
+            AI_BASE_URL = os.getenv("BASE_URL")
+
+    print("READY")
+    watcher = ScreenshotWatcher()
 
     def on_screenshot_detected(image_path):
         window = ScreenshotAnalyzer(image_path)
         window.show()
-
+    
     watcher.screenshot_detected.connect(on_screenshot_detected)
     watcher.start()
+
 
     sys.exit(app.exec_())

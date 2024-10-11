@@ -6,14 +6,17 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>640</width>
-    <height>794</height>
+    <width>613</width>
+    <height>838</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Screenshot Analysis</string>
   </property>
   <widget class="QWidget" name="centralwidget">
+   <property name="styleSheet">
+    <string notr="true">;</string>
+   </property>
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
      <widget class="QLabel" name="image_label">
@@ -45,11 +48,22 @@
         <verstretch>0</verstretch>
        </sizepolicy>
       </property>
+      <property name="font">
+       <font>
+        <family>Open Sans</family>
+       </font>
+      </property>
       <property name="cursor" stdset="0">
        <cursorShape>ArrowCursor</cursorShape>
       </property>
+      <property name="autoFillBackground">
+       <bool>false</bool>
+      </property>
       <property name="styleSheet">
-       <string notr="true">border-radius: 15px;</string>
+       <string notr="true"/>
+      </property>
+      <property name="locale">
+       <locale language="English" country="UnitedStates"/>
       </property>
       <property name="readOnly">
        <bool>true</bool>
@@ -64,13 +78,24 @@
         <height>50</height>
        </size>
       </property>
+      <property name="font">
+       <font>
+        <family>Open Sans</family>
+       </font>
+      </property>
       <property name="styleSheet">
        <string notr="true">border-radius: 15px;</string>
+      </property>
+      <property name="locale">
+       <locale language="English" country="UnitedStates"/>
       </property>
      </widget>
     </item>
     <item>
      <widget class="QPushButton" name="send_button">
+      <property name="styleSheet">
+       <string notr="true"/>
+      </property>
       <property name="text">
        <string>Send</string>
       </property>
