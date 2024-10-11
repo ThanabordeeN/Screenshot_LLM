@@ -89,9 +89,10 @@ class ScreenshotAnalyzer(QMainWindow, Ui_MainWindow):
             error_message.setWindowTitle("Error")
             error_message.setText("Error occurred. Please try again. Error: " + str(e))
             error_message.exec_()
+            if os.path.exists(".env"):
+                os.remove(".env")
             sys.exit(1)
-            
-                
+
 
     def update_conversation(self, text, tag):
         if tag == "ai":
@@ -232,6 +233,5 @@ if __name__ == "__main__":
     
     watcher.screenshot_detected.connect(on_screenshot_detected)
     watcher.start()
-
 
     sys.exit(app.exec_())
