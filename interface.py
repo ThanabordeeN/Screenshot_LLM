@@ -79,6 +79,7 @@ class Ui_MainWindow(object):
         self.tab2_layout = QtWidgets.QVBoxLayout(self.tab2)
         self.tab2_layout.setObjectName("tab2_layout")
 
+
         self.api_key_label = QtWidgets.QLabel(self.tab2)
         self.api_key_label.setFont(font)
         self.api_key_label.setObjectName("api_key_label")
@@ -120,7 +121,13 @@ class Ui_MainWindow(object):
         self.model_id_input.setAlignment(QtCore.Qt.AlignCenter)
         self.model_id_input.setPlaceholderText("Default is gemini/gemini-1.5-flash-002 if left blank")
         self.tab2_layout.addWidget(self.model_id_input)
-
+        
+        self.ollama_checkbox = QtWidgets.QCheckBox(self.tab2)
+        self.ollama_checkbox.setFont(font)
+        self.ollama_checkbox.setObjectName("ollama_checkbox")
+        self.ollama_checkbox.setText("Ollama")
+        self.tab2_layout.addWidget(self.ollama_checkbox)
+        
         self.save_button = QtWidgets.QPushButton(self.tab2)
         self.save_button.setFont(font)
         self.save_button.setObjectName("save_button")

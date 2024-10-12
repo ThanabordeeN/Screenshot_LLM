@@ -10,6 +10,7 @@ import base64
 import markdown
 from interface import Ui_MainWindow  # Import the generated UI class
 from screenshot_watcher import ScreenshotWatcher
+from ollama import chat
 
 USER_ROLE = "user"
 AI_ROLE = "assistant"
@@ -25,6 +26,9 @@ class ScreenshotAnalyzer(QMainWindow, Ui_MainWindow):
         self.LLM_API_MODEL = os.getenv("LLM_API_KEY")
         self.AI_BASE_URL = os.getenv("BASE_URL")
         self.LLM_MODEL_ID = os.getenv("LLM_MODEL_ID")
+        self.OLLAMA = os.getenv("OLLAMA")
+        if self.OLLAMA == '1':
+            self.ollama_checkbox.setChecked(True)
 
 
     def setup_ui(self):
@@ -50,13 +54,16 @@ class ScreenshotAnalyzer(QMainWindow, Ui_MainWindow):
                     env_file.write(f"BASE_URL={AI_BASE_URL}\n")
                 if LLM_MODEL_ID:
                     env_file.write(f"LLM_MODEL_ID={LLM_MODEL_ID}\n")
+                if self.ollama_checkbox.isChecked():
+                    env_file.write(f"OLLAMA=1\n")
             self.show_message("Configuration saved successfully!")
             dotenv.load_dotenv(override=True)
             self.LLM_API_MODEL = os.getenv("LLM_API_KEY")
             self.AI_BASE_URL = os.getenv("BASE_URL")
             self.LLM_MODEL_ID = os.getenv("LLM_MODEL_ID")
         else:
-            self.show_message("Please enter an API key to save configuration.")
+            self.show_message("Please enter an API key to save configuration.\n \
+                if You Use Ollama just fill any API key")
         
     def reset_configurations(self):
         self.LLM_API_MODEL = None
@@ -92,19 +99,22 @@ class ScreenshotAnalyzer(QMainWindow, Ui_MainWindow):
         text = self.entry.text().strip()
         if not text:
             return
-
         self.entry.clear()
         self.update_conversation(text, USER_ROLE)
         self.loading_label.setText("Loading 🔃")
         self.repaint()
         if len(self.memory) == 0:
-            self.memory.append({
-                'role': USER_ROLE,
-                'content': [
-                    {'type': 'text', 'text': text},
-                    {'type': 'image_url', 'image_url': 'data:image/png;base64,' + self.image_to_base64()}
-                ]
-            })
+            if self.ollama_checkbox.isChecked():
+                with open(self.image_path, "rb") as image_file:
+                    self.memory.append({'role':USER_ROLE, 'content':text , 'images': [image_file.read()]})
+            else:                                
+                self.memory.append({
+                    'role': USER_ROLE,
+                    'content': [
+                        {'type': 'text', 'text': text},
+                        {'type': 'image_url', 'image_url': 'data:image/png;base64,' + self.image_to_base64()}
+                    ]
+                })
         else:
             self.memory.append({'role': USER_ROLE, 'content': text})
         try:
@@ -128,7 +138,6 @@ class ScreenshotAnalyzer(QMainWindow, Ui_MainWindow):
         error_message.setText("Error occurred. Please try again. Error: " + error)
         error_message.exec_()
 
-
     def update_conversation(self, text, role):
         markdown_text = markdown.markdown(text) if role == AI_ROLE else text
         self.conversation.append(f"<b>{role.upper()}</b> : <font color='{'blue' if role == AI_ROLE else 'green'}'>{markdown_text}</font>")
@@ -139,17 +148,25 @@ class ScreenshotAnalyzer(QMainWindow, Ui_MainWindow):
             return base64.b64encode(image_file.read()).decode("utf-8")
 
     def generate_answer(self):
-        try:
-            response = completion(
-                model="gemini/gemini-1.5-flash-002" if self.LLM_MODEL_ID is None else self.LLM_MODEL_ID,
-                base_url=None if self.AI_BASE_URL is None else self.AI_BASE_URL,
-                messages=self.memory,
-                api_key=None if self.LLM_API_MODEL is None else self.LLM_API_MODEL
-            )
-            return response.choices[0].message.content
-        except Exception as e:
-            self.show_error_message(str(e))
-            return 
+        if self.ollama_checkbox.isChecked():
+            try:
+                response = chat(model=self.LLM_MODEL_ID, messages=self.memory)
+                return response['message']['content']
+            except Exception as e:
+                self.show_error_message(str(e))
+                return
+        else:
+            try:
+                response = completion(
+                    model="gemini/gemini-1.5-flash-002" if self.LLM_MODEL_ID is None else self.LLM_MODEL_ID,
+                    base_url=None if self.AI_BASE_URL is None else self.AI_BASE_URL,
+                    messages=self.memory,
+                    api_key=None if self.LLM_API_MODEL is None else self.LLM_API_MODEL
+                )
+                return response.choices[0].message.content
+            except Exception as e:
+                self.show_error_message(str(e))
+                return 
     def closeEvent(self, event):
         event.ignore()
         self.hide()
