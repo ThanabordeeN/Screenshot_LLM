@@ -1,3 +1,5 @@
 PyQt5
 python-dotenv
 litellm
+ollama
+markdown
