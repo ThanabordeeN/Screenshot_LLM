@@ -27,6 +27,7 @@ class ScreenshotAnalyzer(QMainWindow, Ui_MainWindow):
         self.AI_BASE_URL = os.getenv("BASE_URL")
         self.LLM_MODEL_ID = os.getenv("LLM_MODEL_ID")
         self.OLLAMA = os.getenv("OLLAMA")
+        self.ollama_checkbox.setChecked(True) # Default to Ollama
         if self.OLLAMA == '1':
             self.ollama_checkbox.setChecked(True)
 
@@ -150,7 +151,8 @@ class ScreenshotAnalyzer(QMainWindow, Ui_MainWindow):
     def generate_answer(self):
         if self.ollama_checkbox.isChecked():
             try:
-                response = chat(model=self.LLM_MODEL_ID, messages=self.memory)
+                response = chat(model='minicpm-v:latest' if self.LLM_MODEL_ID is None else self.LLM_MODEL_ID, 
+                                messages=self.memory)
                 return response['message']['content']
             except Exception as e:
                 self.show_error_message(str(e))

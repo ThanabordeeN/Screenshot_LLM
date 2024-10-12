@@ -83,7 +83,7 @@ class Ui_MainWindow(object):
         self.api_key_label = QtWidgets.QLabel(self.tab2)
         self.api_key_label.setFont(font)
         self.api_key_label.setObjectName("api_key_label")
-        self.api_key_label.setText("LLM API Key")
+        self.api_key_label.setText("LLM API Key \n (Any API Key for Ollama)")
         self.api_key_label.setAlignment(QtCore.Qt.AlignCenter)
         self.tab2_layout.addWidget(self.api_key_label)
 
@@ -104,7 +104,7 @@ class Ui_MainWindow(object):
         self.base_url_input = QtWidgets.QLineEdit(self.tab2)
         self.base_url_input.setFont(font)
         self.base_url_input.setObjectName("base_url_input")
-        self.base_url_input.setPlaceholderText("Default is Google AI Studio if left blank")
+        self.base_url_input.setPlaceholderText("Default : Ollama")
         self.base_url_input.setAlignment(QtCore.Qt.AlignCenter)
         self.tab2_layout.addWidget(self.base_url_input)
 
@@ -112,15 +112,22 @@ class Ui_MainWindow(object):
         self.model_id_label.setAlignment(QtCore.Qt.AlignCenter)
         self.model_id_label.setFont(font)
         self.model_id_label.setObjectName("model_id_label")
-        self.model_id_label.setText("Model ID (optional)")
+        self.model_id_label.setText("Model ID")
         self.tab2_layout.addWidget(self.model_id_label)
 
         self.model_id_input = QtWidgets.QLineEdit(self.tab2)
         self.model_id_input.setFont(font)
         self.model_id_input.setObjectName("model_id_input")
         self.model_id_input.setAlignment(QtCore.Qt.AlignCenter)
-        self.model_id_input.setPlaceholderText("Default is gemini/gemini-1.5-flash-002 if left blank")
+        self.model_id_input.setPlaceholderText("Default : minicpm-v:latest")
         self.tab2_layout.addWidget(self.model_id_input)
+        
+        self.description_label = QtWidgets.QLabel(self.tab2)
+        self.description_label.setFont(font)
+        self.description_label.setObjectName("description_label")
+        self.description_label.setText("Description\nThis application uses Ollama and LiteLLM.\nBase URL and Model ID are referenced from LiteLLM.\n")
+        self.description_label.setAlignment(QtCore.Qt.AlignCenter)
+        self.tab2_layout.addWidget(self.description_label)
         
         self.ollama_checkbox = QtWidgets.QCheckBox(self.tab2)
         self.ollama_checkbox.setFont(font)
