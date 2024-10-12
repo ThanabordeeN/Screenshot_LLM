@@ -144,7 +144,7 @@ class ScreenshotAnalyzer(QMainWindow, Ui_MainWindow):
         else:
             print("Using Litellm")
             response = Worker_litellm(self.memory, self.LLM_API_MODEL, self.LLM_MODEL_ID)
-            response.run()
+            # response.run()
             response.finished.connect(self.finished)
             response.error.connect(self.show_error_message)
             response.start()
