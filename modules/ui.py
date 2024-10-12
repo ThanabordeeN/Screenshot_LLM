@@ -23,7 +23,11 @@ class ScreenshotAnalyzer(QMainWindow, Ui_MainWindow):
         self.AI_BASE_URL = os.getenv("BASE_URL")
         self.LLM_MODEL_ID = os.getenv("LLM_MODEL_ID")
         self.OLLAMA = os.getenv("OLLAMA")
-        self.ollama_checkbox.setChecked(True) # Default to Ollama
+
+        if self.AI_BASE_URL is None:
+            self.ollama_checkbox.setChecked(True)
+
+
         if self.OLLAMA == '1':
             self.ollama_checkbox.setChecked(True)
 
@@ -65,6 +69,8 @@ class ScreenshotAnalyzer(QMainWindow, Ui_MainWindow):
         self.LLM_API_MODEL = None
         self.AI_BASE_URL = None
         self.LLM_MODEL_ID = None
+        self.OLLAMA = 1
+        self.ollama_checkbox.setChecked(True)
         with open(".env", "w") as env_file:
             env_file.write("")
         self.show_message("Configuration reset successfully!")
