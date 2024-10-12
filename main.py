@@ -5,7 +5,7 @@ from modules.screenshot_watcher import ScreenshotWatcher
 from modules.ui import ScreenshotAnalyzer
 from modules.tray_icon import SystemTrayApp
 
-if __name__ == "__main__":
+def main():
     app = QApplication(sys.argv)
 
     # Create the system tray icon
@@ -24,3 +24,6 @@ if __name__ == "__main__":
     watcher.start()
 
     sys.exit(app.exec_())
+
+if __name__ == "__main__":
+    main()

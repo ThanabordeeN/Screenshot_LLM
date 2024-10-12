@@ -24,6 +24,22 @@ For a quick start, download the pre-built executable:
 2. Run `Screenshot_LLM.exe`.
 
 
+## Installation Instructions for Linux Users
+
+1. **Make the `Screenshot_LLM` script executable:**
+
+    ```sh
+    chmod +x Screenshot_LLM.sh
+    ```
+
+2. **Run the `Screenshot_LLM` script through the terminal:**
+
+    ```sh
+    Screenshot_LLM.sh
+    ```
+
+These steps will ensure that the `Installer.sh` script is executable, the necessary environment variables are set, and the `Screenshot_LLM` script can be run from any terminal session.
+
 **From Source Code:**
 
 1. **Install Dependencies:**

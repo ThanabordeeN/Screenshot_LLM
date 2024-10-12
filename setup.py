@@ -1,17 +1,18 @@
-from cx_Freeze import setup, Executable
+from setuptools import setup, find_packages
 
 setup(
-    name="Screenshot_LLM",
-    version="0.1",
-    description="Screenshot_LLM",
-    options={
-        'build_exe': {
-            'include_files': ['icon.ico'],  # Include the icon file
-        }
+    name="screenshot_analyzer",
+    version="1.0",
+    packages=find_packages(),
+    install_requires=[
+        "PyQt5",
+'python-dotenv',
+'litellm',
+'ollama',
+'markdown'    ],
+    entry_points={
+        "console_scripts": [
+            "screenshot_analyzer=main:main",
+        ],
     },
-    executables=[Executable("main.py", 
-                            base="Win32GUI", 
-                            icon="icon.ico", 
-                            target_name="Screenshot_LLM.exe" ,
-                            shortcut_name="Screenshot_LLM")],
 )
