@@ -5,31 +5,36 @@ from PyQt5.QtWidgets import QMainWindow, QMessageBox , QApplication
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import Qt, QSize
 from .interface import Ui_MainWindow  # Import the generated UI class
-from .worker import Worker
+from .generate import Generate
 import dotenv
 
 USER_ROLE = "user"
 AI_ROLE = "assistant"
 
 class ScreenshotAnalyzer(QMainWindow, Ui_MainWindow):
-    def __init__(self, image_path):
+    def __init__(self, image_path = None):
         super().__init__()
         self.setupUi(self)  # Call setupUi on the instance
         self.image_path = image_path
         self.memory = []
         self.setup_ui()
+        
         dotenv.load_dotenv()
         self.LLM_API_MODEL = os.getenv("LLM_API_KEY")
         self.AI_BASE_URL = os.getenv("BASE_URL")
         self.LLM_MODEL_ID = os.getenv("LLM_MODEL_ID")
         self.OLLAMA = os.getenv("OLLAMA")
-
-        if self.AI_BASE_URL is None:
+        if self.LLM_API_MODEL and self.AI_BASE_URL and self.LLM_MODEL_ID:
+            self.api_key_input.setText(self.LLM_API_MODEL)
+            self.base_url_input.setText(self.AI_BASE_URL)
+            self.model_id_input.setText(self.LLM_MODEL_ID)
+            self.ollama_checkbox.setChecked(False)
+        elif self.LLM_API_MODEL:
+            self.api_key_input.setText(self.LLM_API_MODEL)
+            self.ollama_checkbox.setChecked(False)
+        else:
             self.ollama_checkbox.setChecked(True)
-
-
-        if self.OLLAMA == '1':
-            self.ollama_checkbox.setChecked(True)
+        
 
     def setup_ui(self):
         self.display_image()
@@ -118,13 +123,16 @@ class ScreenshotAnalyzer(QMainWindow, Ui_MainWindow):
                 })
         else:
             self.memory.append({'role': USER_ROLE, 'content': text})
-        
-        self.worker = Worker(self.memory, self.ollama_checkbox, self.LLM_API_MODEL, self.AI_BASE_URL, self.LLM_MODEL_ID)
-        self.worker.finished.connect(self.on_worker_finished)
-        self.worker.error.connect(self.show_error_message)
-        self.worker.start()
+        print("Getting response")
+        generator = Generate(self.memory, self.ollama_checkbox, self.LLM_API_MODEL, self.AI_BASE_URL, self.LLM_MODEL_ID)
+        result, status = generator.run()
+        if status == 200:
+            self.finished(result)
+        else:
+            self.show_error_message(result)
+            self.loading_label.setText("")
 
-    def on_worker_finished(self, response):
+    def finished(self, response):
         self.memory.append({'role': AI_ROLE, 'content': response})
         self.loading_label.setText("")
         self.update_conversation(response, AI_ROLE)
@@ -148,8 +156,12 @@ class ScreenshotAnalyzer(QMainWindow, Ui_MainWindow):
         self.conversation.ensureCursorVisible()
 
     def image_to_base64(self):
-        with open(self.image_path, "rb") as image_file:
-            return base64.b64encode(image_file.read()).decode("utf-8")
+        try:
+            with open(self.image_path, "rb") as image_file:
+                return base64.b64encode(image_file.read()).decode("utf-8")
+        except Exception as e:
+            self.show_error_message(str(e))
+            return 
 
     def closeEvent(self, event):
         event.ignore()

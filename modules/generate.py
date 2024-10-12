@@ -1,11 +1,7 @@
-from PyQt5.QtCore import QThread, pyqtSignal
 from litellm import completion
 from ollama import chat
 
-class Worker(QThread):
-    finished = pyqtSignal(str)
-    error = pyqtSignal(str)
-
+class Generate():
     def __init__(self, memory, ollama_checkbox, LLM_API_MODEL, AI_BASE_URL, LLM_MODEL_ID):
         super().__init__()
         self.memory = memory
@@ -19,14 +15,15 @@ class Worker(QThread):
             if self.ollama_checkbox.isChecked():
                 response = chat(model='minicpm-v:latest' if self.LLM_MODEL_ID is None else self.LLM_MODEL_ID, 
                                 messages=self.memory)
-                self.finished.emit(response['message']['content'])
+                return response['message']['content'] , 200
             else:
                 response = completion(
                     model="gemini/gemini-1.5-flash-002" if self.LLM_MODEL_ID is None else self.LLM_MODEL_ID,
-                    base_url=None if self.AI_BASE_URL is None else self.AI_BASE_URL,
+                    base_url=self.AI_BASE_URL if self.AI_BASE_URL is not None else None,
                     messages=self.memory,
-                    api_key=None if self.LLM_API_MODEL is None else self.LLM_API_MODEL
+                    api_key=self.LLM_API_MODEL if self.LLM_API_MODEL is not None else None
                 )
-                self.finished.emit(response.choices[0].message.content)
+        
+            return response.choices[0].message.content , 200
         except Exception as e:
-            self.error.emit(str(e))
+            return str(e) , 500
