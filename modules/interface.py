@@ -51,7 +51,7 @@ class Ui_MainWindow(object):
         self.MainWindow.move(x, y)
 
         # Set window icon
-        icon = QtGui.QIcon("icon.png")
+        icon = QtGui.QIcon("modules/icon.png")
         self.MainWindow.setWindowIcon(icon)
 
     def setup_main_tab(self, font):
@@ -171,14 +171,18 @@ class Ui_MainWindow(object):
             }
             QScrollBar{
                 background : #e0e0e0;
+                border-radius: 10px;
                 }
                 QScrollBar::handle
                 {
                 background : #0056b3;
+                border-radius: 10px;
+
                 }
                 QScrollBar::handle::pressed
                 {
                 background : #004080;
+                border-radius: 10px;
                 }
             QLabel {
                 background-color: #e0e0e0;
@@ -229,7 +233,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "HashtagAI"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Screenshot LLM"))
         self.send_button.setText(_translate("MainWindow", "Send"))
 
 if __name__ == "__main__":
