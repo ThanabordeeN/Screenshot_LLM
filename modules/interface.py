@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtGui, QtWidgets 
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -31,6 +31,14 @@ class Ui_MainWindow(object):
         self.tab_widget.addTab(self.tab2, "Settings")
         self.verticalLayout.addWidget(self.tab_widget)
 
+        # Add grey text at the bottom
+        self.credit_label = QtWidgets.QLabel(self.centralwidget)
+        self.credit_label.setStyleSheet("color: grey; font-size: 10px;")
+        self.credit_label.setText("Created by <a href='https://github.com/ThanabordeeN/Screenshot_LLM'>ThanabordeeN</a>")
+        self.credit_label.setAlignment(QtCore.Qt.AlignCenter)
+        self.credit_label.setOpenExternalLinks(True)
+        self.verticalLayout.addWidget(self.credit_label)
+
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
@@ -41,6 +49,10 @@ class Ui_MainWindow(object):
         x = screen_geometry.width() - self.MainWindow.width()
         y = 0
         self.MainWindow.move(x, y)
+
+        # Set window icon
+        icon = QtGui.QIcon("icon.png")
+        self.MainWindow.setWindowIcon(icon)
 
     def setup_main_tab(self, font):
         self.tab1 = QtWidgets.QWidget()
@@ -78,7 +90,6 @@ class Ui_MainWindow(object):
         self.tab2.setObjectName("tab2")
         self.tab2_layout = QtWidgets.QVBoxLayout(self.tab2)
         self.tab2_layout.setObjectName("tab2_layout")
-
 
         self.api_key_label = QtWidgets.QLabel(self.tab2)
         self.api_key_label.setFont(font)
@@ -158,6 +169,17 @@ class Ui_MainWindow(object):
                 padding: 10px;
                 background-color: #ffffff;
             }
+            QScrollBar{
+                background : #e0e0e0;
+                }
+                QScrollBar::handle
+                {
+                background : #0056b3;
+                }
+                QScrollBar::handle::pressed
+                {
+                background : #004080;
+                }
             QLabel {
                 background-color: #e0e0e0;
             }
@@ -207,7 +229,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "sHashtagAI"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "HashtagAI"))
         self.send_button.setText(_translate("MainWindow", "Send"))
 
 if __name__ == "__main__":
