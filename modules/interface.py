@@ -105,20 +105,6 @@ class Ui_MainWindow(object):
         self.api_key_input.setAlignment(QtCore.Qt.AlignCenter)
         self.tab2_layout.addWidget(self.api_key_input)
 
-        self.base_url_label = QtWidgets.QLabel(self.tab2)
-        self.base_url_label.setFont(font)
-        self.base_url_label.setObjectName("base_url_label")
-        self.base_url_label.setText("Base URL (optional)")
-        self.base_url_label.setAlignment(QtCore.Qt.AlignCenter)
-        self.tab2_layout.addWidget(self.base_url_label)
-
-        self.base_url_input = QtWidgets.QLineEdit(self.tab2)
-        self.base_url_input.setFont(font)
-        self.base_url_input.setObjectName("base_url_input")
-        self.base_url_input.setPlaceholderText("Default : Ollama")
-        self.base_url_input.setAlignment(QtCore.Qt.AlignCenter)
-        self.tab2_layout.addWidget(self.base_url_input)
-
         self.model_id_label = QtWidgets.QLabel(self.tab2)
         self.model_id_label.setAlignment(QtCore.Qt.AlignCenter)
         self.model_id_label.setFont(font)
@@ -136,7 +122,8 @@ class Ui_MainWindow(object):
         self.description_label = QtWidgets.QLabel(self.tab2)
         self.description_label.setFont(font)
         self.description_label.setObjectName("description_label")
-        self.description_label.setText("Description\nThis application uses Ollama and LiteLLM.\nBase URL and Model ID are referenced from LiteLLM.\n")
+        self.description_label.setText("<b>Description</b> \n This application uses Ollama and LiteLLM.\n Model ID are referenced from LiteLLM.\n \
+            <a href='https://docs.litellm.ai/docs/'>LiteLLM Documentation</a>\n  ")
         self.description_label.setAlignment(QtCore.Qt.AlignCenter)
         self.tab2_layout.addWidget(self.description_label)
         

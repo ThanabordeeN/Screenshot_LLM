@@ -18,15 +18,10 @@ class ScreenshotAnalyzer(QMainWindow, Ui_MainWindow):
         self.image_path = image_path
         self.memory = []
         self.setup_ui()
-        
-        dotenv.load_dotenv()
-        self.LLM_API_MODEL = os.getenv("LLM_API_KEY")
-        self.AI_BASE_URL = os.getenv("BASE_URL")
-        self.LLM_MODEL_ID = os.getenv("LLM_MODEL_ID")
-        self.OLLAMA = os.getenv("OLLAMA")
-        if self.LLM_API_MODEL and self.AI_BASE_URL and self.LLM_MODEL_ID:
+        self.load_config()
+
+        if self.LLM_API_MODEL and self.LLM_MODEL_ID:
             self.api_key_input.setText(self.LLM_API_MODEL)
-            self.base_url_input.setText(self.AI_BASE_URL)
             self.model_id_input.setText(self.LLM_MODEL_ID)
             self.ollama_checkbox.setChecked(False)
         elif self.LLM_API_MODEL:
@@ -34,7 +29,12 @@ class ScreenshotAnalyzer(QMainWindow, Ui_MainWindow):
             self.ollama_checkbox.setChecked(False)
         else:
             self.ollama_checkbox.setChecked(True)
-        
+    def load_config(self):
+            dotenv.load_dotenv(override=True)
+            self.LLM_API_MODEL = os.getenv("LLM_API_KEY")
+            self.LLM_MODEL_ID = os.getenv("LLM_MODEL_ID")
+            self.OLLAMA = os.getenv("OLLAMA")        
+            print(self.LLM_API_MODEL, self.LLM_MODEL_ID, self.OLLAMA)
 
     def setup_ui(self):
         self.display_image()
@@ -50,37 +50,30 @@ class ScreenshotAnalyzer(QMainWindow, Ui_MainWindow):
     
     def save_config(self):
         LLM_API_MODEL = self.api_key_input.text()
-        AI_BASE_URL = self.base_url_input.text()
         LLM_MODEL_ID = self.model_id_input.text()
         if LLM_API_MODEL: 
             with open(".env", "w") as env_file:
                 env_file.write(f"LLM_API_KEY={LLM_API_MODEL}\n")
-                if AI_BASE_URL:
-                    env_file.write(f"BASE_URL={AI_BASE_URL}\n")
                 if LLM_MODEL_ID:
                     env_file.write(f"LLM_MODEL_ID={LLM_MODEL_ID}\n")
                 if self.ollama_checkbox.isChecked():
                     env_file.write(f"OLLAMA=1\n")
+            self.load_config()
             self.show_message("Configuration saved successfully!")
-            dotenv.load_dotenv(override=True)
-            self.LLM_API_MODEL = os.getenv("LLM_API_KEY")
-            self.AI_BASE_URL = os.getenv("BASE_URL")
-            self.LLM_MODEL_ID = os.getenv("LLM_MODEL_ID")
         else:
             self.show_message("Please enter an API key to save configuration.\n \
                 if You Use Ollama just fill any API key")
         
     def reset_configurations(self):
         self.LLM_API_MODEL = None
-        self.AI_BASE_URL = None
         self.LLM_MODEL_ID = None
         self.OLLAMA = 1
         self.ollama_checkbox.setChecked(True)
+        self.load_config()
         with open(".env", "w") as env_file:
             env_file.write("")
         self.show_message("Configuration reset successfully!")
         self.api_key_input.clear()
-        self.base_url_input.clear()
         self.model_id_input.clear()
             
     def reset(self):
@@ -101,8 +94,8 @@ class ScreenshotAnalyzer(QMainWindow, Ui_MainWindow):
         self.image_label.setMinimumSize(self.w, self.h)
         self.image_label.setPixmap(pixmap)
 
-    def send_text(self):
-        text = self.entry.text().strip()
+    def send_text(self):        
+        text = self.entry.text()
         if not text:
             return
         self.entry.clear()
@@ -134,12 +127,13 @@ class ScreenshotAnalyzer(QMainWindow, Ui_MainWindow):
         else:
             self.memory.append({'role': USER_ROLE, 'content': text})
         print("Getting response")
+        self.load_config()
         try: 
-            generator = Generate(self.memory, self.ollama_checkbox, self.LLM_API_MODEL, self.AI_BASE_URL, self.LLM_MODEL_ID)
+            generator = Generate(self.memory, self.ollama_checkbox, self.LLM_API_MODEL, self.LLM_MODEL_ID)
             result = generator.run()
             self.finished(result)
         except Exception as e:
-            self.show_error_message("Please check your configurations")
+            self.show_error_message("Please check your configurations {}".format(e))
             self.loading_label.setText("")
 
     def finished(self, response):
@@ -169,7 +163,6 @@ class ScreenshotAnalyzer(QMainWindow, Ui_MainWindow):
     def image_to_base64(self):
         with open(self.image_path, "rb") as image_file:
             return base64.b64encode(image_file.read()).decode("utf-8")
-
 
     def closeEvent(self, event):
         event.ignore()

@@ -5,8 +5,6 @@ from modules.screenshot_watcher import ScreenshotWatcher
 from modules.ui import ScreenshotAnalyzer
 from modules.tray_icon import SystemTrayApp
 
-
-
 if __name__ == "__main__":
     app = QApplication(sys.argv)
 
