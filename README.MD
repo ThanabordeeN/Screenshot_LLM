@@ -35,7 +35,6 @@ For a quick start, download the pre-built executable:
 
    ```
    LLM_API_KEY=YOUR_API_KEY  # Your API key for the LLM
-   BASE_URL=https://api.example.com  # (Optional) Base URL for the API
    LLM_MODEL_ID=your_model_id  # (Optional) Your preferred model ID
    OLLAMA=1  # Set to 1 to enable Ollama integration (requires Ollama to be running)
    SCREENSHOT_DIRECTORY=C:/path/to/your/screenshots  # Path to your screenshot directory.  Defaults to standard location if not provided.
@@ -59,7 +58,6 @@ For a quick start, download the pre-built executable:
 The application uses a `.env` file to store configuration details.  Essential settings include:
 
 *   `LLM_API_KEY`: Your API key for the chosen LLM service.
-*   `BASE_URL`: (Optional)  The base URL for the LLM API.
 *   `LLM_MODEL_ID`: (Optional) The specific model ID to utilize.
 *   `OLLAMA`: (Optional) Set to `1` to enable local LLM inference using Ollama.  Requires Ollama to be running and configured.
 *   `SCREENSHOT_DIRECTORY`: [Optional] Path to the directory containing screenshots.
