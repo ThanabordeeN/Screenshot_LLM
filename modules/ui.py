@@ -5,7 +5,9 @@ from PyQt5.QtWidgets import QMainWindow, QMessageBox , QApplication
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import Qt, QSize
 from .interface import Ui_MainWindow  # Import the generated UI class
-from .generate import Generate
+from .local_generate import Worker_Local
+from .litellm_generate import Worker_litellm
+import asyncio
 import dotenv
 
 USER_ROLE = "user"
@@ -19,22 +21,19 @@ class ScreenshotAnalyzer(QMainWindow, Ui_MainWindow):
         self.memory = []
         self.setup_ui()
         self.load_config()
+        self.model_id_input.setText(self.LLM_MODEL_ID)
+        self.api_key_input.setText(self.LLM_API_MODEL)
 
-        if self.LLM_API_MODEL and self.LLM_MODEL_ID:
-            self.api_key_input.setText(self.LLM_API_MODEL)
-            self.model_id_input.setText(self.LLM_MODEL_ID)
-            self.ollama_checkbox.setChecked(False)
-        elif self.LLM_API_MODEL:
-            self.api_key_input.setText(self.LLM_API_MODEL)
-            self.ollama_checkbox.setChecked(False)
-        else:
+        if self.OLLAMA == "1":
             self.ollama_checkbox.setChecked(True)
+        else :
+            self.ollama_checkbox.setChecked(False) 
+        
     def load_config(self):
             dotenv.load_dotenv(override=True)
             self.LLM_API_MODEL = os.getenv("LLM_API_KEY")
             self.LLM_MODEL_ID = os.getenv("LLM_MODEL_ID")
             self.OLLAMA = os.getenv("OLLAMA")        
-            print(self.LLM_API_MODEL, self.LLM_MODEL_ID, self.OLLAMA)
 
     def setup_ui(self):
         self.display_image()
@@ -51,27 +50,34 @@ class ScreenshotAnalyzer(QMainWindow, Ui_MainWindow):
     def save_config(self):
         LLM_API_MODEL = self.api_key_input.text()
         LLM_MODEL_ID = self.model_id_input.text()
-        if LLM_API_MODEL: 
-            with open(".env", "w") as env_file:
-                env_file.write(f"LLM_API_KEY={LLM_API_MODEL}\n")
-                if LLM_MODEL_ID:
-                    env_file.write(f"LLM_MODEL_ID={LLM_MODEL_ID}\n")
-                if self.ollama_checkbox.isChecked():
-                    env_file.write(f"OLLAMA=1\n")
-            self.load_config()
-            self.show_message("Configuration saved successfully!")
-        else:
-            self.show_message("Please enter an API key to save configuration.\n \
-                if You Use Ollama just fill any API key")
+        with open(".env", "w") as env_file:
+            env_file.write(f"LLM_API_KEY={LLM_API_MODEL}\n")
+            if LLM_MODEL_ID:
+                env_file.write(f"LLM_MODEL_ID={LLM_MODEL_ID}\n")
+            else:
+                env_file.write(f"LLM_MODEL_ID=\n")
+            
+            if self.ollama_checkbox.isChecked():
+                env_file.write(f"OLLAMA=1\n")
+            else:
+                env_file.write(f"OLLAMA=0\n")
+        self.load_config()
+        self.model_id_input.setText(self.LLM_MODEL_ID)
+        self.api_key_input.setText(self.LLM_API_MODEL)
+
+        self.show_message("Configuration saved successfully!")
+
         
     def reset_configurations(self):
         self.LLM_API_MODEL = None
         self.LLM_MODEL_ID = None
-        self.OLLAMA = 1
+        self.OLLAMA = "1"
         self.ollama_checkbox.setChecked(True)
         self.load_config()
         with open(".env", "w") as env_file:
-            env_file.write("")
+            env_file.write("LLM_API_KEY=\n")
+            env_file.write("LLM_MODEL_ID=\n")
+            env_file.write("OLLAMA=1\n")
         self.show_message("Configuration reset successfully!")
         self.api_key_input.clear()
         self.model_id_input.clear()
@@ -95,7 +101,7 @@ class ScreenshotAnalyzer(QMainWindow, Ui_MainWindow):
         self.image_label.setPixmap(pixmap)
 
     def send_text(self):        
-        text = self.entry.text()
+        text = self.entry.text().strip()
         if not text:
             return
         self.entry.clear()
@@ -105,8 +111,7 @@ class ScreenshotAnalyzer(QMainWindow, Ui_MainWindow):
         if len(self.memory) == 0:
             if self.ollama_checkbox.isChecked():
                 try:
-                    with open(self.image_path, "rb") as image_file:
-                        self.memory.append({'role':USER_ROLE, 'content':text , 'images': [image_file.read()]})
+                    self.memory.append({'role':USER_ROLE, 'content':text , 'images': [self.image_path]})
                 except Exception as e:
                     self.show_error_message("No image found")
                     self.loading_label.setText("")
@@ -128,13 +133,23 @@ class ScreenshotAnalyzer(QMainWindow, Ui_MainWindow):
             self.memory.append({'role': USER_ROLE, 'content': text})
         print("Getting response")
         self.load_config()
-        try: 
-            generator = Generate(self.memory, self.ollama_checkbox, self.LLM_API_MODEL, self.LLM_MODEL_ID)
-            result = generator.run()
-            self.finished(result)
-        except Exception as e:
-            self.show_error_message("Please check your configurations {}".format(e))
-            self.loading_label.setText("")
+        if self.OLLAMA == "1":
+            print("Using Ollama")
+            generator = Worker_Local(self.memory, self.LLM_API_MODEL, self.LLM_MODEL_ID)
+            generator.finished.connect(self.finished)
+            generator.error.connect(self.show_error_message)
+            generator.start()
+            print("Worker started")  # Debug print
+            self.worker_reference = generator  # Keep a reference to the Worker instance
+        else:
+            print("Using Litellm")
+            response = Worker_litellm(self.memory, self.LLM_API_MODEL, self.LLM_MODEL_ID)
+            response.run()
+            response.finished.connect(self.finished)
+            response.error.connect(self.show_error_message)
+            response.start()
+            self.worker_response = response
+
 
     def finished(self, response):
         self.memory.append({'role': AI_ROLE, 'content': response})
@@ -144,6 +159,7 @@ class ScreenshotAnalyzer(QMainWindow, Ui_MainWindow):
     def show_message(self, message):
         message_box = QMessageBox()
         message_box.setWindowTitle("Message")
+        message_box.setWindowModality(Qt.ApplicationModal)
         message_box.setText(message)
         message_box.exec_()
     
@@ -152,6 +168,7 @@ class ScreenshotAnalyzer(QMainWindow, Ui_MainWindow):
         red_color = "<font color='red'> {}</font>".format(error)
         error_message.setIcon(QMessageBox.Critical)
         error_message.setWindowTitle("Error")
+        error_message.setWindowModality(Qt.ApplicationModal)
         error_message.setText("Error occurred. Please try again. Error: " + red_color)
         error_message.exec_()
 

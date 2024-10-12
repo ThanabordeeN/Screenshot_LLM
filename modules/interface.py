@@ -103,6 +103,7 @@ class Ui_MainWindow(object):
         self.api_key_input.setObjectName("api_key_input")
         self.api_key_input.setPlaceholderText("Get your API key from Provider's website")
         self.api_key_input.setAlignment(QtCore.Qt.AlignCenter)
+        self.api_key_input.setEchoMode(QtWidgets.QLineEdit.Password)
         self.tab2_layout.addWidget(self.api_key_input)
 
         self.model_id_label = QtWidgets.QLabel(self.tab2)
@@ -122,7 +123,7 @@ class Ui_MainWindow(object):
         self.description_label = QtWidgets.QLabel(self.tab2)
         self.description_label.setFont(font)
         self.description_label.setObjectName("description_label")
-        self.description_label.setText("<b>Description</b> \n This application uses Ollama and LiteLLM.\n Model ID are referenced from LiteLLM.\n \
+        self.description_label.setText("<b>Description</b> \n Powered by Ollama and LiteLLM. \
             <a href='https://docs.litellm.ai/docs/'>LiteLLM Documentation</a>\n  ")
         self.description_label.setAlignment(QtCore.Qt.AlignCenter)
         self.tab2_layout.addWidget(self.description_label)
