@@ -18,7 +18,7 @@ class Generate():
                 return response['message']['content'] , 200
             else:
                 response = completion(
-                    model="gemini/gemini-1.5-flash-002" if self.LLM_MODEL_ID is None else self.LLM_MODEL_ID,
+                    model=self.LLM_MODEL_ID if self.LLM_MODEL_ID is not None else None,
                     base_url=self.AI_BASE_URL if self.AI_BASE_URL is not None else None,
                     messages=self.memory,
                     api_key=self.LLM_API_MODEL if self.LLM_API_MODEL is not None else None
@@ -26,4 +26,4 @@ class Generate():
         
             return response.choices[0].message.content , 200
         except Exception as e:
-            return str(e) , 500
+            raise e

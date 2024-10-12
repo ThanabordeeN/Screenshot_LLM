@@ -51,7 +51,7 @@ class Ui_MainWindow(object):
         self.MainWindow.move(x, y)
 
         # Set window icon
-        icon = QtGui.QIcon("modules/icon.png")
+        icon = QtGui.QIcon("icon.png")
         self.MainWindow.setWindowIcon(icon)
 
     def setup_main_tab(self, font):

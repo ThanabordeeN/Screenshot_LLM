@@ -111,25 +111,35 @@ class ScreenshotAnalyzer(QMainWindow, Ui_MainWindow):
         self.repaint()
         if len(self.memory) == 0:
             if self.ollama_checkbox.isChecked():
-                with open(self.image_path, "rb") as image_file:
-                    self.memory.append({'role':USER_ROLE, 'content':text , 'images': [image_file.read()]})
-            else:                                
-                self.memory.append({
-                    'role': USER_ROLE,
-                    'content': [
-                        {'type': 'text', 'text': text},
-                        {'type': 'image_url', 'image_url': 'data:image/png;base64,' + self.image_to_base64()}
-                    ]
-                })
+                try:
+                    with open(self.image_path, "rb") as image_file:
+                        self.memory.append({'role':USER_ROLE, 'content':text , 'images': [image_file.read()]})
+                except Exception as e:
+                    self.show_error_message("No image found")
+                    self.loading_label.setText("")
+                    return
+            else:
+                try:                 
+                    self.memory.append({
+                        'role': USER_ROLE,
+                        'content': [
+                            {'type': 'text', 'text': text},
+                            {'type': 'image_url', 'image_url': 'data:image/png;base64,' + self.image_to_base64()}
+                        ]
+                    })
+                except Exception as e:
+                    self.show_error_message("No image found")
+                    self.loading_label.setText("")
+                    return
         else:
             self.memory.append({'role': USER_ROLE, 'content': text})
         print("Getting response")
-        generator = Generate(self.memory, self.ollama_checkbox, self.LLM_API_MODEL, self.AI_BASE_URL, self.LLM_MODEL_ID)
-        result, status = generator.run()
-        if status == 200:
+        try: 
+            generator = Generate(self.memory, self.ollama_checkbox, self.LLM_API_MODEL, self.AI_BASE_URL, self.LLM_MODEL_ID)
+            result = generator.run()
             self.finished(result)
-        else:
-            self.show_error_message(result)
+        except Exception as e:
+            self.show_error_message("Please check your configurations")
             self.loading_label.setText("")
 
     def finished(self, response):
@@ -145,9 +155,10 @@ class ScreenshotAnalyzer(QMainWindow, Ui_MainWindow):
     
     def show_error_message(self, error):
         error_message = QMessageBox()
+        red_color = "<font color='red'> {}</font>".format(error)
         error_message.setIcon(QMessageBox.Critical)
         error_message.setWindowTitle("Error")
-        error_message.setText("Error occurred. Please try again. Error: " + error)
+        error_message.setText("Error occurred. Please try again. Error: " + red_color)
         error_message.exec_()
 
     def update_conversation(self, text, role):
@@ -156,12 +167,9 @@ class ScreenshotAnalyzer(QMainWindow, Ui_MainWindow):
         self.conversation.ensureCursorVisible()
 
     def image_to_base64(self):
-        try:
-            with open(self.image_path, "rb") as image_file:
-                return base64.b64encode(image_file.read()).decode("utf-8")
-        except Exception as e:
-            self.show_error_message(str(e))
-            return 
+        with open(self.image_path, "rb") as image_file:
+            return base64.b64encode(image_file.read()).decode("utf-8")
+
 
     def closeEvent(self, event):
         event.ignore()
