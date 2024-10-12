@@ -1,49 +1,81 @@
-# Screenshot LLM
+# Screenshot LLM: AI-Powered Screenshot Analysis
 
-Screenshot LLM is a Python application that utilizes PyQt5 for the user interface and integrates with various AI models to analyze screenshots. The application allows users to interact with screenshots and receive insights based on the content of the images.
+Screenshot LLM is a Python application that leverages the power of AI to analyze screenshots.  Built with PyQt5 for a user-friendly interface and integrating with various AI models (including Ollama), it provides insightful information directly from images.
 
 ## Features
 
-- **Screenshot Detection**: Automatically detects new screenshots saved in the user's designated screenshot directory.
-- **User Interface**: A clean and intuitive interface built with PyQt5, allowing users to interact with the application easily.
-- **Configuration Management**: Users can configure API keys and model IDs through the settings tab.
-- **Memory Management**: The application can reset its memory and configurations as needed.
+* **Automated Screenshot Detection:** Automatically detects new screenshots saved in a user-specified directory.
+* **Intuitive PyQt5 GUI:**  A clean and easy-to-use graphical interface for seamless interaction.
+* **Configurable AI Models:** Supports multiple AI models via configurable API keys and model IDs.
+* **Flexible Configuration:**  Manage settings, including API keys and model selection, through a dedicated settings tab.
+* **Memory Management:**  Allows resetting application memory and configurations.
+* **Ollama Integration (Optional):**  Analyze screenshots using your local Ollama models.
 
-## Installation
 
-To install the required dependencies, run the following command:
+## Getting Started
 
-```bash
-pip install -r requirements.txt
-```
+**Pre-built Executable:**
+
+For a quick start, download the pre-built executable:
+
+[Download](https://drive.google.com/file/d/1RTobs3usu4oucYrTiEIHWD84KjNASXWw/view?usp=sharing)
+
+1. Extract the downloaded zip file.
+2. Run `Screenshot_LLM.exe`.
+
+
+**From Source Code:**
+
+1. **Install Dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+2. **Configure Environment:** Create a `.env` file in the project's root directory and add your API keys and settings:
+
+   ```
+   LLM_API_KEY=YOUR_API_KEY  # Your API key for the LLM
+   BASE_URL=https://api.example.com  # (Optional) Base URL for the API
+   LLM_MODEL_ID=your_model_id  # (Optional) Your preferred model ID
+   OLLAMA=1  # Set to 1 to enable Ollama integration (requires Ollama to be running)
+   SCREENSHOT_DIRECTORY=C:/path/to/your/screenshots  # Path to your screenshot directory.  Defaults to standard location if not provided.
+   ```
+
+3. **Run the Application:**
+
+   ```bash
+   python main.py
+   ```
 
 ## Usage
 
-1. Ensure you have the necessary API keys for the AI models you wish to use.
-2. Run the application using the following command:
+1.  Provide your API keys and configure settings in the `.env` file or the application's settings tab.
+2.  Run the application.  It will monitor your designated screenshot directory.
+3.  New screenshots will be automatically processed and analyzed, providing insights via the user interface.
 
-```bash
-python main.py
-```
 
-3. The application will start, and you can interact with it through the GUI.
+## Configuration Details
 
-## Configuration
+The application uses a `.env` file to store configuration details.  Essential settings include:
 
-The application uses a `.env` file to store configuration settings. You can set the following variables:
+*   `LLM_API_KEY`: Your API key for the chosen LLM service.
+*   `BASE_URL`: (Optional)  The base URL for the LLM API.
+*   `LLM_MODEL_ID`: (Optional) The specific model ID to utilize.
+*   `OLLAMA`: (Optional) Set to `1` to enable local LLM inference using Ollama.  Requires Ollama to be running and configured.
+*   `SCREENSHOT_DIRECTORY`: [Optional] Path to the directory containing screenshots.
 
-- `LLM_API_KEY`: Your API key for the LLM service.
-- `BASE_URL`: (Optional) The base URL for the API.
-- `LLM_MODEL_ID`: (Optional) The model ID to use for the LLM.
-- `OLLAMA`: (Optional) Set to `1` to enable Ollama integration.
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License.  See the `LICENSE` file for details.
+
 
 ## Acknowledgments
 
-- [PyQt5](https://www.riverbankcomputing.com/software/pyqt/intro) for the GUI framework.
-- [python-dotenv](https://pypi.org/project/python-dotenv/) for managing environment variables.
-- [litellm](https://pypi.org/project/litellm/) for AI model integration.
-- [ollama](https://github.com/ollama/ollama-python) for Local LLM Inference 
+*   **PyQt5:** For the user interface.
+*   **python-dotenv:** For environment variable management.
+*   **litellm:** For AI model integration.
+*   **ollama:** For local LLM inference (optional).
+
+
+This revised description is clearer, more concise, and better organized for readability.  It also provides more specific guidance for setup and usage.
