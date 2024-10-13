@@ -2,7 +2,7 @@ from cx_Freeze import setup, Executable
 
 setup(
     name="Screenshot_LLM",
-    version="0.1",
+    version="0.1.2",
     description="Screenshot_LLM",
     options={
         'build_exe': {

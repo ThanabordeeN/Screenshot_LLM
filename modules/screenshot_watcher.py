@@ -1,14 +1,16 @@
-from PyQt5.QtCore import QThread, pyqtSignal
+from PyQt6.QtCore import QThread, pyqtSignal
 import os
 import time
 
 class ScreenshotWatcher(QThread):
     screenshot_detected = pyqtSignal(str)
+    
 
     def __init__(self):
         super().__init__()
         self.directory = self.get_screenshot_directory()
         self.last_check_time = time.time()
+        
 
     def get_screenshot_directory(self):
         if os.path.exists(os.path.join(os.path.expanduser("~"), "Pictures", "Screenshots")):

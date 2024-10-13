@@ -1,13 +1,12 @@
 import sys
-from PyQt5.QtWidgets import QApplication
-from PyQt5.QtGui import QIcon
+from PyQt6.QtWidgets import QApplication
+from PyQt6.QtGui import QIcon
 from modules.screenshot_watcher import ScreenshotWatcher
 from modules.ui import ScreenshotAnalyzer
 from modules.tray_icon import SystemTrayApp
 
-if __name__ == "__main__":
+def main():
     app = QApplication(sys.argv)
-
     # Create the system tray icon
     tray_icon = QIcon("icon.ico")  # Ensure you have an icon.png in your project directory
     tray = SystemTrayApp(tray_icon)
@@ -23,4 +22,7 @@ if __name__ == "__main__":
     watcher.screenshot_detected.connect(on_screenshot_detected)
     watcher.start()
 
-    sys.exit(app.exec_())
+    sys.exit(app.exec())
+
+if __name__ == "__main__":
+    main()

@@ -1,4 +1,5 @@
-from PyQt5.QtWidgets import QSystemTrayIcon, QMenu, QAction, QApplication
+from PyQt6.QtWidgets import QSystemTrayIcon, QMenu, QApplication
+from PyQt6.QtGui import QAction
 from .ui import ScreenshotAnalyzer
 
 class SystemTrayApp(QSystemTrayIcon):
