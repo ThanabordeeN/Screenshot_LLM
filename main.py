@@ -6,6 +6,7 @@ from modules.ui import ScreenshotAnalyzer
 from modules.tray_icon import SystemTrayApp
 
 def main():
+def main():
     app = QApplication(sys.argv)
     # Create the system tray icon
     tray_icon = QIcon("icon.ico")  # Ensure you have an icon.png in your project directory
