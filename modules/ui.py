@@ -29,6 +29,12 @@ class ScreenshotAnalyzer(QMainWindow, Ui_MainWindow):
         else :
             self.ollama_checkbox.setChecked(False)     
         
+        if self.DARK_MODE == "1":
+            self.dark_mode_checkbox.setChecked(True)
+        else:
+            self.dark_mode_checkbox.setChecked(False)
+        
+        
         self.setup_loading_animation()
 
     def load_config(self):
@@ -36,12 +42,11 @@ class ScreenshotAnalyzer(QMainWindow, Ui_MainWindow):
             self.LLM_API_MODEL = os.getenv("LLM_API_KEY")
             self.LLM_MODEL_ID = os.getenv("LLM_MODEL_ID")
             self.OLLAMA = os.getenv("OLLAMA")        
-            self.dark_mode = True if os.getenv("DARK_MODE") == "1" else False
+            self.DARK_MODE = os.getenv("DARK_MODE")
 
     def setup_ui(self):
         self.display_image()
         self.conversation.setReadOnly(True)
-        self.conversation.append("Ask me anything about this screenshot!\n")
         self.send_button.clicked.connect(self.send_text)
         self.reset_memory.clicked.connect(self.reset)
         self.save_button.clicked.connect(self.save_config)
@@ -85,7 +90,7 @@ class ScreenshotAnalyzer(QMainWindow, Ui_MainWindow):
             env_file.write("LLM_API_KEY=\n")
             env_file.write("LLM_MODEL_ID=\n")
             env_file.write("OLLAMA=1\n")
-            env_file.wrtte("DARK_MODE=1\n")
+            env_file.wrtte("DARK_MODE=0\n")
         self.show_message("Configuration reset successfully!")
         self.api_key_input.clear()
         self.model_id_input.clear()
@@ -114,7 +119,6 @@ class ScreenshotAnalyzer(QMainWindow, Ui_MainWindow):
             return
         self.entry.clear()
         self.update_conversation(text, USER_ROLE)
-        self.loading_label.setText("Loading ⠋")
         self.loading_timer.start()
         self.repaint()
         if len(self.memory) == 0:
@@ -167,6 +171,7 @@ class ScreenshotAnalyzer(QMainWindow, Ui_MainWindow):
     def show_message(self, message):
         message_box = QMessageBox()
         message_box.setWindowTitle("Message")
+        message_box.setIcon(QMessageBox.Icon.NoIcon)
         message_box.setWindowModality(Qt.WindowModality.ApplicationModal)
         message_box.setText(message)
         message_box.exec()
@@ -175,7 +180,7 @@ class ScreenshotAnalyzer(QMainWindow, Ui_MainWindow):
         self.loading_timer.stop()
         error_message = QMessageBox()
         red_color = "<font color='red'> {}</font>".format(error)
-        error_message.setIcon(QMessageBox.Critical)
+        error_message.setIcon(QMessageBox.Icon.Critical)
         error_message.setWindowTitle("Error")
         error_message.setWindowModality(Qt.WindowModality.ApplicationModal)
         error_message.setText("Error occurred. Please try again. Error: " + red_color)
@@ -187,9 +192,9 @@ class ScreenshotAnalyzer(QMainWindow, Ui_MainWindow):
         ai_color = 'white' if self.dark_mode else 'blue'
 
         if role == USER_ROLE:
-            self.conversation.append(f"<b>{role.upper()}</b> : <font color='{user_color}'>{text}</font>")
+            self.conversation.append(f"😊 : <font color='{user_color}'>{text}</font>")
         else:
-            self.conversation.append(f"<b>{role.upper()}</b> : <font color='{ai_color}'>{markdown_text}</font>")
+            self.conversation.append(f"🤖 : <font color='{ai_color}'>{markdown_text}</font>")
 
         self.conversation.ensureCursorVisible()
 

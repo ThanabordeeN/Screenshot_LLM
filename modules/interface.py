@@ -6,8 +6,7 @@ class Ui_MainWindow(object):
         self.MainWindow = MainWindow
         
         # Convert DARK_MODE environment variable to boolean
-        dark_mode_env = os.getenv("DARK_MODE", "1")  # Default to "1" if not set
-        self.dark_mode = dark_mode_env.lower() in ('true', '1', 'yes', 'on')
+        self.dark_mode = False
 
         self.MainWindow.setObjectName("MainWindow")
         self.MainWindow.resize(640, 794)
@@ -30,8 +29,8 @@ class Ui_MainWindow(object):
         self.tab_widget = QtWidgets.QTabWidget(self.centralwidget)
         self.tab_widget.setFont(font)
         self.tab_widget.setObjectName("tab_widget")
-        self.tab_widget.addTab(self.tab1, "Main")
-        self.tab_widget.addTab(self.tab2, "Settings")
+        self.tab_widget.addTab(self.tab1, "🖼️ Main")
+        self.tab_widget.addTab(self.tab2, "⚙️ Settings")
         self.verticalLayout.addWidget(self.tab_widget)
 
         # Add credit text at the bottom
@@ -79,10 +78,10 @@ class Ui_MainWindow(object):
         button_layout = QtWidgets.QHBoxLayout()
         button_layout.setSpacing(10)
 
-        self.send_button = self.create_button("Send", font)
+        self.send_button = self.create_button("⏭️ Send", font)
         button_layout.addWidget(self.send_button)
 
-        self.reset_memory = self.create_button("Reset Memory", font)
+        self.reset_memory = self.create_button("🔃 Memory", font)
         button_layout.addWidget(self.reset_memory)
 
         self.tab1_layout.addLayout(button_layout)
@@ -284,11 +283,13 @@ class Ui_MainWindow(object):
     def create_text_edit(self, font):
         text_edit = QtWidgets.QTextEdit(self.centralwidget)
         text_edit.setFont(font)
+        text_edit.setPlaceholderText("🔥 Ask me anything about this screenshot!")
         text_edit.setReadOnly(True)
         return text_edit
 
     def create_line_edit(self, font):
         line_edit = QtWidgets.QLineEdit(self.centralwidget)
+        line_edit.setPlaceholderText("Enter Your Message 💬")
         line_edit.setFont(font)
         return line_edit
 
