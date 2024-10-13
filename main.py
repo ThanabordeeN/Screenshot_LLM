@@ -25,4 +25,11 @@ def main():
     sys.exit(app.exec())
 
 if __name__ == "__main__":
+    import tkinter as tk
+    from tkinter import messagebox
+
+    root = tk.Tk()
     main()
+    root.withdraw()
+    messagebox.showinfo("Info", "Programe ended")
+    root.mainloop()

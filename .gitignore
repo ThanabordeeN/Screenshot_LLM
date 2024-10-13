@@ -4,3 +4,4 @@ build/
 venv/
 output.log
 tsx/
+screenshot_llm/

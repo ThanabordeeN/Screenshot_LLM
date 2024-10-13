@@ -90,7 +90,7 @@ class ScreenshotAnalyzer(QMainWindow, Ui_MainWindow):
             env_file.write("LLM_API_KEY=\n")
             env_file.write("LLM_MODEL_ID=\n")
             env_file.write("OLLAMA=1\n")
-            env_file.wrtte("DARK_MODE=0\n")
+            env_file.write("DARK_MODE=0\n")
         self.show_message("Configuration reset successfully!")
         self.api_key_input.clear()
         self.model_id_input.clear()
