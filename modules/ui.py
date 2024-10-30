@@ -11,6 +11,7 @@ import dotenv
 
 USER_ROLE = "user"
 AI_ROLE = "assistant"
+SCRLLM_ENV_FILE = os.getenv("SCRLLM_ENV_FILE", ".env")
 
 class ScreenshotAnalyzer(QMainWindow, Ui_MainWindow):
     def __init__(self, image_path = None):
@@ -58,7 +59,7 @@ class ScreenshotAnalyzer(QMainWindow, Ui_MainWindow):
     def save_config(self):
         LLM_API_MODEL = self.api_key_input.text()
         LLM_MODEL_ID = self.model_id_input.text()
-        with open(".env", "w") as env_file:
+        with open(SCRLLM_ENV_FILE, "w") as env_file:
             env_file.write(f"LLM_API_KEY={LLM_API_MODEL}\n")
             if LLM_MODEL_ID:
                 env_file.write(f"LLM_MODEL_ID={LLM_MODEL_ID}\n")
@@ -86,7 +87,7 @@ class ScreenshotAnalyzer(QMainWindow, Ui_MainWindow):
         self.OLLAMA = "1"
         self.ollama_checkbox.setChecked(True)
         self.load_config()
-        with open(".env", "w") as env_file:
+        with open(SCRLLM_ENV_FILE, "w") as env_file:
             env_file.write("LLM_API_KEY=\n")
             env_file.write("LLM_MODEL_ID=\n")
             env_file.write("OLLAMA=1\n")
