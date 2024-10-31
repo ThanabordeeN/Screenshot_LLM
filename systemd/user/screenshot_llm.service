@@ -42,7 +42,7 @@ Environment=LLM_MODEL_ID=minicpm-v:latest
 # Screenshots path
 Environment=SCREENSHOT_DIRECTORY=%h/Pictures/Screenshots
 # .env location
-Environment=SCRLLM_ENV_FILE=%h/.Screenshot_LLM/env
+Environment=SCRLLM_ENV_FILE=%h/.screenshot_llm/env
 
 WorkingDirectory=/usr/lib/Screenshot_LLM
 ExecStart=/usr/bin/bash Screenshot_LLM.sh

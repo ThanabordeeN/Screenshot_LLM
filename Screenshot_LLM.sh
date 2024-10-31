@@ -1,11 +1,11 @@
 #!/bin/bash
 i=
 # Define the lock file path
-LOCKFILE="/tmp/screen_llm.lock"
+LOCKFILE="/tmp/screenshot_llm.lock"
 
 # Define the virtual environment path
 # Embed trailing slash to retain relative path capability
-VENVPATH="${VENVPATH:-$HOME/.screen_llm/}"
+VENVPATH="${VENVPATH:-$HOME/.screenshot_llm/}"
 
 # Function to pause the script
 pause_script() {
