@@ -3,7 +3,7 @@
 Categories=Qt;Utility;ArtificialIntelligence;
 Comment[en_US]=AI-Powered Screenshot Analysis
 Comment=AI-Powered Screenshot Analysis
-Exec=env OLLAMA=1 /usr/bin/screenshot_llm
+Exec=/usr/bin/screenshot_llm
 GenericName[en_US]=Screenshot Analyzer
 GenericName=Screenshot Analyzer
 Icon=/usr/lib/Screenshot_LLM/icon.ico
