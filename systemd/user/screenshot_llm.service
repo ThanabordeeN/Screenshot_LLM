@@ -34,11 +34,11 @@ ReadWritePaths=-%h/.cache/pip
 
 Environment=SCRLLM_SYSTEMD_UNIT=%n
 # Enable Ollama
-Environment=OLLAMA=1
+#Environment=OLLAMA=1
 # Your API key for the LLM
-Environment=LLM_API_KEY=YOUR_API_KEY
+#Environment=LLM_API_KEY=YOUR_API_KEY
 # (Optional) Your preferred model ID
-Environment=LLM_MODEL_ID=minicpm-v:latest
+#Environment=LLM_MODEL_ID=minicpm-v:latest
 # Screenshots path
 Environment=SCREENSHOT_DIRECTORY=%h/Pictures/Screenshots
 # .env location
