@@ -1,11 +1,11 @@
 #!/bin/bash
-
+i=
 # Define the lock file path
 LOCKFILE="/tmp/screen_llm.lock"
 
 # Define the virtual environment path
 # Embed trailing slash to retain relative path capability
-VENVPATH="${VENVPATH:-$HOME/.${0##*/}/}"
+VENVPATH="${VENVPATH:-$HOME/.screen_llm/}"
 
 # Function to pause the script
 pause_script() {
@@ -39,7 +39,7 @@ fi
 if [ ! -d "${VENVPATH}venv" ]; then
     echo "Virtual environment not found. Creating one..."
     mkdir -p $VENVPATH
-    python3 -m venv "${VENVPATH}venv"
+    python -m venv "${VENVPATH}venv"
     if [ $? -ne 0 ]; then
         echo "Failed to create virtual environment."
         pause_script
@@ -81,7 +81,7 @@ fi
 # Run the main Python script in the background with nohup when run without systemd
 # Send a bogus argument to match on to avoid conflicts managing the process
 if [ -z "$SCRLLM_SYSTEMD_UNIT" ]; then
-    nohup python main.py --screenshot_llm > output.log 2>&1 &
+    nohup python main.py --screenshot_llm > ${VENVPATH}/output.log 2>&1 &
 else
     python main.py --screenshot_llm
 fi
