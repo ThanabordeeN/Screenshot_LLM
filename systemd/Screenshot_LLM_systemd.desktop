@@ -1,0 +1,18 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Categories=Qt;Utility;ArtificialIntelligence;
+Comment[en_US]=AI-Powered Screenshot Analysis
+Comment=AI-Powered Screenshot Analysis
+Exec=/usr/bin/systemctl --user start screenshot_llm
+GenericName[en_US]=Screenshot Analyzer
+GenericName=Screenshot Analyzer
+Icon=/usr/lib/Screenshot_LLM/icon.ico
+Name[en_US]=Screenshot LLM
+Name=Screenshot LLM (systemd)
+Path=/usr/lib/Screenshot_LLM
+StartupNotify=true
+Terminal=false
+TerminalOptions=
+Type=Application
+X-KDE-SubstituteUID=false
+X-KDE-Username=
