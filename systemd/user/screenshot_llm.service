@@ -29,7 +29,7 @@ RestrictSUIDSGID=yes
 RestrictAddressFamilies=AF_UNIX AF_INET
 RestrictNetworkInterfaces=lo
 SecureBits=noroot-locked
-ReadWritePaths=-%h/.Screenshot_LLM.sh
+ReadWritePaths=-%h/.screenshot_llm
 ReadWritePaths=-%h/.cache/pip
 
 Environment=SCRLLM_SYSTEMD_UNIT=%n
