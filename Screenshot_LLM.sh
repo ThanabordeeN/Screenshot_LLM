@@ -20,7 +20,7 @@ pause_script() {
 
 # Prepare env file
 if [[ -n "$SCRLLM_ENV_FILE" && ! -e "$SCRLLM_ENV_FILE" ]]; then
-    echo touch "$SCRLLM_ENV_FILE"
+    [ ! -e "${SCRLLM_ENV_FILE%/*}" ] && mkdir -p "${SCRLLM_ENV_FILE%/*}"
     touch "$SCRLLM_ENV_FILE"
 fi
 
