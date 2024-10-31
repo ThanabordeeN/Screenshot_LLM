@@ -14,6 +14,7 @@ class SystemTrayApp(QSystemTrayIcon):
         menu.addAction(config_action)
         menu.addAction(exit_action)
         self.setContextMenu(menu)
+        self.setToolTip("Screenshot LLM")
 
     def exit_app(self):
         QApplication.quit()

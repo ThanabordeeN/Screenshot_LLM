@@ -39,7 +39,7 @@ class ScreenshotAnalyzer(QMainWindow, Ui_MainWindow):
         self.setup_loading_animation()
 
     def load_config(self):
-            dotenv.load_dotenv(override=True)
+            dotenv.load_dotenv(SCRLLM_ENV_FILE, override=True)
             self.LLM_API_MODEL = os.getenv("LLM_API_KEY")
             self.LLM_MODEL_ID = os.getenv("LLM_MODEL_ID")
             self.OLLAMA = os.getenv("OLLAMA")        
