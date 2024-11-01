@@ -1,11 +1,11 @@
 # Screenshot LLM: AI-Powered Screenshot Analysis
 
-Screenshot LLM is a Python application that leverages the power of AI to analyze screenshots.  Built with PyQt5 for a user-friendly interface and integrating with various AI models (including Ollama), it provides insightful information directly from images.
+Screenshot LLM is a Python application that leverages the power of AI to analyze screenshots.  Built with PyQt6 for a user-friendly interface and integrating with various AI models (including Ollama), it provides insightful information directly from images.
 
 ## Features
 
 * **Automated Screenshot Detection:** Automatically detects new screenshots saved in a user-specified directory.
-* **Intuitive PyQt5 GUI:**  A clean and easy-to-use graphical interface for seamless interaction.
+* **Intuitive PyQt6 GUI:**  A clean and easy-to-use graphical interface for seamless interaction.
 * **Configurable AI Models:** Supports multiple AI models via configurable API keys and model IDs.
 * **Flexible Configuration:**  Manage settings, including API keys and model selection, through a dedicated settings tab.
 * **Memory Management:**  Allows resetting application memory and configurations.
@@ -26,6 +26,8 @@ For a quick start, download the pre-built executable:
 
 ## Installation Instructions for Linux Users
 
+### Shell Script
+
 1. **Make the `Screenshot_LLM` script executable:**
 
     ```sh
@@ -39,6 +41,25 @@ For a quick start, download the pre-built executable:
     ```
 
 These steps will ensure that the `Installer.sh` script is executable, the necessary environment variables are set, and the `Screenshot_LLM` script can be run from any terminal session.
+
+### Pacman makepkg
+
+1. **Clone repo & navigate to *PKGBUILD***
+
+   ```sh
+   cd package/archlinux
+   ```
+
+2. **Build and install package**
+
+   ```sh
+   makepkg --source --install
+   ```
+
+This builds a package file and installs it. The `Screenshot_LLM.desktop` is now globally available and executes the systemd service. Alternatively the service can be started manually or on boot:
+
+- Manual start: `systemctl --user start screenshot_llm.service`
+- Start and enable on boot: `systemctl --user enable screenshot_llm.service --now`
 
 **From Source Code:**
 
@@ -78,6 +99,12 @@ The application uses a `.env` file to store configuration details.  Essential se
 *   `OLLAMA`: (Optional) Set to `1` to enable local LLM inference using Ollama.  Requires Ollama to be running and configured.
 *   `SCREENSHOT_DIRECTORY`: [Optional] Path to the directory containing screenshots.
 
+## Environment Variable Overrides
+
+These are used to ovrride hard-coded defaults.  Mainly for use with the systemd implementation:
+
+*   `SCRLLM_SYSTEMD_UNIT`: If set to any value, the script presumes execution from a systemd enviornment.  The systemd unit defaults to `%n`.
+*   `SCRLLM_ENV_FILE`: Override the `.env` location, systemd unit defaults to `%h/.screenshot_llm/env`
 
 ## License
 
@@ -86,7 +113,7 @@ This project is licensed under the MIT License.  See the `LICENSE` file for deta
 
 ## Acknowledgments
 
-*   **PyQt5:** For the user interface.
+*   **PyQt6:** For the user interface.
 *   **python-dotenv:** For environment variable management.
 *   **litellm:** For AI model integration.
 *   **ollama:** For local LLM inference (optional).
