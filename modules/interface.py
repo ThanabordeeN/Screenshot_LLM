@@ -305,6 +305,9 @@ class Ui_MainWindow(object):
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
+    app.setApplicationName("Screenshot LLM")
+    app.setDesktopFileName("Screenshot_LLM")
+    app.setWindowIcon(QtGui.QIcon("icon.ico"))
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
     ui.setupUi(MainWindow)

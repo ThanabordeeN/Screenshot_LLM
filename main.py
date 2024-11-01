@@ -7,6 +7,10 @@ from modules.tray_icon import SystemTrayApp
 
 def main():
     app = QApplication(sys.argv)
+    app.setApplicationName("Screenshot LLM")
+    app.setDesktopFileName("Screenshot_LLM")
+    app.setWindowIcon(QIcon("icon.ico"))
+
     # Create the system tray icon
     tray_icon = QIcon("icon.ico")  # Ensure you have an icon.png in your project directory
     tray = SystemTrayApp(tray_icon)
