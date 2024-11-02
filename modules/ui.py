@@ -1,7 +1,7 @@
 import os
 import base64
 import markdown
-from PyQt6.QtWidgets import QMainWindow, QMessageBox , QApplication
+from PyQt6.QtWidgets import QMainWindow, QMessageBox, QApplication
 from PyQt6.QtGui import QPixmap
 from PyQt6.QtCore import Qt, QSize, QTimer
 from .interface import Ui_MainWindow  # Import the generated UI class
@@ -17,25 +17,30 @@ class ScreenshotAnalyzer(QMainWindow, Ui_MainWindow):
     def __init__(self, image_path = None):
         super().__init__()
         self.setupUi(self)  # Call setupUi on the instance
-        
+
         self.image_path = image_path
         self.memory = []
         self.setup_ui()
         self.load_config()
         self.model_id_input.setText(self.LLM_MODEL_ID)
         self.api_key_input.setText(self.LLM_API_MODEL)
+        self.icon_scheme_combobox.setCurrentText(self.ICON_SCHEME)
 
         if self.OLLAMA == "1":
             self.ollama_checkbox.setChecked(True)
         else :
             self.ollama_checkbox.setChecked(False)     
-        
+
         if self.DARK_MODE == "1":
             self.dark_mode_checkbox.setChecked(True)
         else:
             self.dark_mode_checkbox.setChecked(False)
-        
-        
+
+        if self.ICON_SCHEME != "":
+            self.icon_scheme_combobox.setCurrentText(self.ICON_SCHEME)
+        else:
+            self.icon_scheme_combobox.setCurrentText("default")
+
         self.setup_loading_animation()
 
     def load_config(self):
@@ -44,6 +49,7 @@ class ScreenshotAnalyzer(QMainWindow, Ui_MainWindow):
             self.LLM_MODEL_ID = os.getenv("LLM_MODEL_ID")
             self.OLLAMA = os.getenv("OLLAMA")        
             self.DARK_MODE = os.getenv("DARK_MODE")
+            self.ICON_SCHEME = os.getenv("ICON_SCHEME")
 
     def setup_ui(self):
         self.display_image()
@@ -59,6 +65,7 @@ class ScreenshotAnalyzer(QMainWindow, Ui_MainWindow):
     def save_config(self):
         LLM_API_MODEL = self.api_key_input.text()
         LLM_MODEL_ID = self.model_id_input.text()
+        ICON_SCHEME = self.icon_scheme_combobox.currentText()
         with open(SCRLLM_ENV_FILE, "w") as env_file:
             env_file.write(f"LLM_API_KEY={LLM_API_MODEL}\n")
             if LLM_MODEL_ID:
@@ -71,16 +78,21 @@ class ScreenshotAnalyzer(QMainWindow, Ui_MainWindow):
             else:
                 env_file.write(f"OLLAMA=0\n")
             if self.dark_mode_checkbox.isChecked():
-                env_file.write("DARK_MODE=1")
-            else :
-                env_file.write("DARK_MODE=0")
+                env_file.write("DARK_MODE=1\n")
+            else:
+                env_file.write("DARK_MODE=0\n")
+            if ICON_SCHEME:
+                env_file.write(f"ICON_SCHEME={ICON_SCHEME}")
+            else:
+                env_file.write(f"ICON_SCHEME=")
         self.load_config()
         self.model_id_input.setText(self.LLM_MODEL_ID)
         self.api_key_input.setText(self.LLM_API_MODEL)
+        self.icon_scheme_combobox.setCurrentText(self.ICON_SCHEME)
 
         self.show_message("Configuration saved successfully!")
 
-        
+
     def reset_configurations(self):
         self.LLM_API_MODEL = None
         self.LLM_MODEL_ID = None
@@ -92,6 +104,7 @@ class ScreenshotAnalyzer(QMainWindow, Ui_MainWindow):
             env_file.write("LLM_MODEL_ID=\n")
             env_file.write("OLLAMA=1\n")
             env_file.write("DARK_MODE=0\n")
+            env_file.write("ICON_SCHEME=default")
         self.show_message("Configuration reset successfully!")
         self.api_key_input.clear()
         self.model_id_input.clear()
