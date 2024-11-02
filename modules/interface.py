@@ -21,7 +21,7 @@ ui_icon_schemes = {
             "settings_icon": "☸ ",
     },
     "dingbat": {
-            "main_icon": "✒  ",
+            "main_icon": "✒ ",
             "send_icon": "➥ ",
             "reset_icon": "✖ ",
             "settings_icon": "❂ ",
