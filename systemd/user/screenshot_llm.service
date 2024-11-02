@@ -1,0 +1,53 @@
+[Unit]
+Description=Screenshot LLM: AI-Powered Screenshot Analysis
+Documentation=https://github.com/ThanabordeeN/Screenshot_LLM
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+# Security sandbox
+ProtectProc=invisible
+SystemCallArchitectures=native
+ProtectSystem=strict
+ProtectHome=read-only
+DevicePolicy=closed
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+ProtectKernelLogs=yes
+SystemCallFilter=~@clock @mount @swap @cpu-emulation @keyring @module @raw-io @resources @timer @setuid
+SystemCallErrorNumber=EPERM
+NoNewPrivileges=yes
+PrivateTmp=yes
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+ProtectClock=yes
+RestrictNamespaces=yes
+RestrictRealtime=yes
+RestrictSUIDSGID=yes
+RestrictAddressFamilies=AF_UNIX AF_INET
+RestrictNetworkInterfaces=lo
+SecureBits=noroot-locked
+ReadWritePaths=-%h/.screenshot_llm
+ReadWritePaths=-%h/.cache/pip
+
+Environment=SCRLLM_SYSTEMD_UNIT=%n
+# Enable Ollama
+#Environment=OLLAMA=1
+# Your API key for the LLM
+#Environment=LLM_API_KEY=YOUR_API_KEY
+# (Optional) Your preferred model ID
+#Environment=LLM_MODEL_ID=minicpm-v:latest
+# Screenshots path
+Environment=SCREENSHOT_DIRECTORY=%h/Pictures/Screenshots
+# .env location
+Environment=SCRLLM_ENV_FILE=%h/.screenshot_llm/env
+
+WorkingDirectory=/usr/lib/Screenshot_LLM
+ExecStart=/usr/bin/bash Screenshot_LLM.sh
+Type=simple
+Restart=on-failure
+
+[Install]
+WantedBy=default.target
