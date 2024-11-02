@@ -29,8 +29,11 @@ RestrictSUIDSGID=yes
 RestrictAddressFamilies=AF_UNIX AF_INET
 RestrictNetworkInterfaces=lo
 SecureBits=noroot-locked
-ReadWritePaths=-%h/.screenshot_llm
-ReadWritePaths=-%h/.cache/pip
+# Workaround to ensure paths exist
+ExecCondition=+/usr/bin/mkdir -p %h/.screenshot_llm
+ExecCondition=+/usr/bin/mkdir -p %h/.cache/pip
+ReadWritePaths=%h/.screenshot_llm
+ReadWritePaths=%h/.cache/pip
 
 Environment=SCRLLM_SYSTEMD_UNIT=%n
 # Enable Ollama
