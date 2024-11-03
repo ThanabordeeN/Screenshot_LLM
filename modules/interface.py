@@ -1,12 +1,48 @@
 from PyQt6 import QtCore, QtGui, QtWidgets 
 import os
 
+ui_icon_schemes = {
+    "default": {
+            "main_icon": "🖼️ ",
+            "send_icon": "⏭️ ",
+            "reset_icon": "🔃 ",
+            "settings_icon": "⚙️ ",
+    },
+    "basic": {
+            "main_icon": "🖼 ",        
+            "send_icon": "⏵ ",
+            "reset_icon": "⟳ ",
+            "settings_icon": "⚙ ",
+    },
+    "trite": {
+            "main_icon": "⌂ ",
+            "send_icon": "☞ ",
+            "reset_icon": "♲ ",
+            "settings_icon": "☸ ",
+    },
+    "dingbat": {
+            "main_icon": "✒ ",
+            "send_icon": "➥ ",
+            "reset_icon": "✖ ",
+            "settings_icon": "❂ ",
+    },
+}
+
+ui_elements = {
+    "main_button": "Main",
+    "send_button": "Send",
+    "reset_button": "Memory",
+    "settings_button": "Settings",
+}
+
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         self.MainWindow = MainWindow
-        
+
         # Convert DARK_MODE environment variable to boolean
         self.dark_mode = False
+
+        self.icon_scheme = os.environ.get("ICON_SCHEME", "default")
 
         self.MainWindow.setObjectName("MainWindow")
         self.MainWindow.resize(640, 794)
@@ -29,8 +65,8 @@ class Ui_MainWindow(object):
         self.tab_widget = QtWidgets.QTabWidget(self.centralwidget)
         self.tab_widget.setFont(font)
         self.tab_widget.setObjectName("tab_widget")
-        self.tab_widget.addTab(self.tab1, "🖼️ Main")
-        self.tab_widget.addTab(self.tab2, "⚙️ Settings")
+        self.tab_widget.addTab(self.tab1, f"{ui_icon_schemes[self.icon_scheme]["main_icon"]}{ui_elements["main_button"]}")
+        self.tab_widget.addTab(self.tab2, f"{ui_icon_schemes[self.icon_scheme]["settings_icon"]}{ui_elements["settings_button"]}")
         self.verticalLayout.addWidget(self.tab_widget)
 
         # Add credit text at the bottom
@@ -78,10 +114,15 @@ class Ui_MainWindow(object):
         button_layout = QtWidgets.QHBoxLayout()
         button_layout.setSpacing(10)
 
-        self.send_button = self.create_button("⏭️ Send", font)
-        button_layout.addWidget(self.send_button)
+        self.send_button = self.create_button(f"{ui_icon_schemes[self.icon_scheme]["send_icon"]}{ui_elements["send_button"]}", font)
+        self.send_button.setObjectName("send_button")
 
-        self.reset_memory = self.create_button("🔃 Memory", font)
+        self.reset_memory = self.create_button(f"{ui_icon_schemes[self.icon_scheme]["reset_icon"]}{ui_elements["reset_button"]}", font)
+        self.reset_memory.setObjectName("reset_memory")
+
+        self.equalize_buttons(self.send_button, self.reset_memory)
+
+        button_layout.addWidget(self.send_button)
         button_layout.addWidget(self.reset_memory)
 
         self.tab1_layout.addLayout(button_layout)
@@ -110,22 +151,34 @@ class Ui_MainWindow(object):
         self.model_id_input.setPlaceholderText("Default: minicpm-v:latest")
         self.model_id_input.setEchoMode(QtWidgets.QLineEdit.EchoMode.Normal)
         self.tab2_layout.addWidget(self.model_id_input)
-        
+
+        self.icon_scheme_label = self.create_label("Icon Scheme")
+        self.icon_scheme_label.setObjectName("icon_scheme_label")
+        self.icon_scheme_label.setFont(font)
+        self.tab2_layout.addWidget(self.icon_scheme_label)
+
+        self.icon_scheme_combobox = QtWidgets.QComboBox(self.tab2)
+        self.icon_scheme_combobox.setFont(font)
+        self.icon_scheme_combobox.setCurrentText(self.icon_scheme)  # Set initial state
+        self.icon_scheme_combobox.addItems(ui_icon_schemes.keys())
+        self.icon_scheme_combobox.currentTextChanged.connect(self.change_icon_scheme)
+        self.tab2_layout.addWidget(self.icon_scheme_combobox)
+
         self.description_label = self.create_label("Description")
         self.description_label.setFont(font)
         self.description_label.setText("<b>Description</b><br>Powered by Ollama and LiteLLM.<br><a href='https://docs.litellm.ai/docs/'>LiteLLM Documentation</a>")
         self.tab2_layout.addWidget(self.description_label)
-        
+
         self.ollama_checkbox = QtWidgets.QCheckBox("Ollama", self.tab2)
         self.ollama_checkbox.setFont(font)
         self.tab2_layout.addWidget(self.ollama_checkbox)
-        
+
         self.dark_mode_checkbox = QtWidgets.QCheckBox("Dark Mode", self.tab2)
         self.dark_mode_checkbox.setFont(font)
         self.dark_mode_checkbox.setChecked(self.dark_mode)  # Set initial state
         self.dark_mode_checkbox.stateChanged.connect(self.toggle_dark_mode)
         self.tab2_layout.addWidget(self.dark_mode_checkbox)
-        
+
         button_layout = QtWidgets.QHBoxLayout()
         button_layout.setSpacing(10)
 
@@ -140,9 +193,37 @@ class Ui_MainWindow(object):
     def toggle_dark_mode(self, state):
         self.dark_mode = state == QtCore.Qt.CheckState.Checked.value
         self.apply_stylesheet()
-        
+
         # Update the DARK_MODE environment variable
         os.environ["DARK_MODE"] = "1" if self.dark_mode else "0"
+
+    def change_icon_scheme(self, icon_scheme):
+        self.MainWindow.findChild(QtWidgets.QLabel, "icon_scheme_label").setText("Icon Scheme\n{}".format(" ".join(list(ui_icon_schemes[icon_scheme].values()))))
+
+        self.MainWindow.findChild(QtWidgets.QTabWidget, "tab_widget").setTabText(0, f"{ui_icon_schemes[icon_scheme]["main_icon"]}{ui_elements["main_button"]}")
+        self.MainWindow.findChild(QtWidgets.QTabWidget, "tab_widget").setTabText(1, f"{ui_icon_schemes[icon_scheme]["settings_icon"]}{ui_elements["settings_button"]}")
+
+        send_button = self.MainWindow.findChild(QtWidgets.QPushButton, "send_button")
+        send_button.setText(f"{ui_icon_schemes[icon_scheme]["send_icon"]}{ui_elements["send_button"]}")
+        reset_memory = self.MainWindow.findChild(QtWidgets.QPushButton, "reset_memory")
+        reset_memory.setText(f"{ui_icon_schemes[icon_scheme]["reset_icon"]}{ui_elements["reset_button"]}")
+
+        self.equalize_buttons(send_button, reset_memory)
+
+        # Update the ICON_SCHEME environment variable
+        os.environ["ICON_SCHEME"] = self.icon_scheme
+
+    def equalize_buttons(self, send_button, reset_memory):
+        # Equalize button size
+        if send_button.sizeHint().height() > reset_memory.sizeHint().height():
+            height = send_button.sizeHint().height()
+        else:
+            height = reset_memory.sizeHint().height()
+
+        reset_memory.setMinimumSize(QtCore.QSize(send_button.sizeHint().width(), height))
+        reset_memory.adjustSize()
+        send_button.setMinimumSize(QtCore.QSize(reset_memory.sizeHint().width(), height))
+        send_button.adjustSize()
 
     def apply_stylesheet(self):
         if self.dark_mode:
@@ -210,6 +291,16 @@ class Ui_MainWindow(object):
             QCheckBox {
                 color: #333333;
             }
+            QComboBox {
+                background-color: #f8f8f8;
+                color: #333333;
+                border: none;
+                border-radius: 8px;
+                padding: 12px
+            }
+            QComboBox::down-arrow {
+                display: none;
+            }
         """
 
     def get_dark_stylesheet(self):
@@ -272,6 +363,16 @@ class Ui_MainWindow(object):
             QCheckBox {
                 color: #ffffff;
             }
+            QComboBox {
+                background-color: #3c3c3c;
+                color: #ffffff;
+                border: none;
+                border-radius: 8px;
+                padding: 12px
+            }
+            QComboBox::down-arrow {
+                display: none;
+            }
         """
 
     def create_label(self, text=""):
@@ -293,15 +394,17 @@ class Ui_MainWindow(object):
         line_edit.setFont(font)
         return line_edit
 
-    def create_button(self, text, font):
+    def create_button(self, text, font, sizeX = 0, sizeY = 0):
         button = QtWidgets.QPushButton(text, self.centralwidget)
         button.setFont(font)
+        button.setMinimumWidth(sizeX)
+        button.setMinimumHeight(sizeY)
         return button
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Screenshot LLM"))
-        
+
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
