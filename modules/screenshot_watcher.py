@@ -13,10 +13,15 @@ class ScreenshotWatcher(QThread):
         
 
     def get_screenshot_directory(self):
-        if os.path.exists(os.path.join(os.path.expanduser("~"), "Pictures", "Screenshots")):
-            return os.path.join(os.path.expanduser("~"), "Pictures", "Screenshots")
+        scr_dir_path = os.environ.get("SCREENSHOT_DIRECTORY", "")
+        if scr_dir_path != "":
+            if os.path.exists(scr_dir_path):
+                return scr_dir_path
         else:
-            return os.path.join(os.path.expanduser("~"), "OneDrive", "Pictures", "Screenshots")
+            if os.path.exists(os.path.join(os.path.expanduser("~"), "Pictures", "Screenshots")):
+                return os.path.join(os.path.expanduser("~"), "Pictures", "Screenshots")
+            else:
+                return os.path.join(os.path.expanduser("~"), "OneDrive", "Pictures", "Screenshots")
 
     def run(self):
         while True:
