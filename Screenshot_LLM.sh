@@ -7,6 +7,17 @@ LOCKFILE="/tmp/screenshot_llm.lock"
 # Embed trailing slash to retain relative path capability
 VENVPATH="${VENVPATH:-$HOME/.screenshot_llm/}"
 
+# This makes it easy to run in basic environments like Git Bash for Windows
+check_running() {
+    if hash pgrep &>/dev/null; then
+        pgrep -f "$1" &>/dev/null
+    elif [[ "$OSTYPE" =~ ^cygwin|msys$ ]]; then
+        find /proc -maxdepth 1 -type d -regextype sed -regex '^.\+/[0-9]\+' -exec bash -c 'xargs -0 < {}/cmdline' \; | grep "$1" &>/dev/null
+    else
+        ps -ef | grep "$1" &>/dev/null
+    fi
+}
+
 # Function to pause the script
 pause_script() {
     # Determine if executed via systemd unit
@@ -47,7 +58,12 @@ if [ ! -d "${VENVPATH}venv" ]; then
 fi
 
 # Activate the virtual environment
-source ${VENVPATH}venv/bin/activate
+if [[ "$OSTYPE" =~ ^cygwin|msys$ ]]; then
+    [ -z "$SCREENSHOT_DIRECTORY" ] && SCREENSHOT_DIRECTORY="${HOME}/Pictures/Screenshots"
+    source ${VENVPATH}venv/Scripts/activate
+else
+    source ${VENVPATH}venv/bin/activate
+fi
 
 # Check if the virtual environment was activated successfully
 if [ $? -ne 0 ]; then
@@ -71,7 +87,7 @@ fi
 
 # Check if the Python script is already running
 if [ -z "$SCRLLM_SYSTEMD_UNIT" ]; then
-    if pgrep -f "python main.py --screenshot_llm" > /dev/null; then
+    if check_running "main.py --screenshot_llm"; then
         echo "Python script is already running. Exiting."
         rm "$LOCKFILE"
         exit 1
